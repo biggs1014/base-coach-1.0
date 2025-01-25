@@ -123,14 +123,17 @@
     </div>
 
     <script>
+        // **Global Speed Factor**
+        const SPEED_FACTOR = 0.45; // 45% of original speed
+
         // Runner Class
         class Runner {
             constructor(pos, base_name, target) {
                 this.pos = pos;
                 this.base = base_name;
                 this.target = target;
-                // **Slowing down the runner's speed by 20%**
-                this.speed = (Math.random() * (0.020 - 0.008) + 0.008) * 0.8; // Reduced speed
+                // Apply the global speed factor
+                this.speed = (Math.random() * (0.020 - 0.008) + 0.008) * SPEED_FACTOR;
                 this.current_fraction = 0;
                 this.isOut = false;
             }
