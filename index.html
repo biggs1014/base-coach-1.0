@@ -12,20 +12,14 @@
             padding: 0;
         }
 
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden; /* Prevent scrolling */
-        }
-
         body {
-            font-family: Arial, sans-serif;
+            font-family: sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
             background-color: #f0f0f0;
-            height: 100%;
-            padding: 10px;
+            min-height: 100vh;
+            padding: 10px; /* Added padding for better spacing on mobile */
         }
 
         #game-container {
@@ -33,82 +27,79 @@
             flex-direction: column;
             align-items: center;
             width: 100%;
-            height: 100%;
+            max-width: 600px; /* Limit maximum width for larger screens */
         }
 
         /* Responsive Canvas */
         canvas {
-            border: 2px solid black;
+            border: 1px solid black;
             background-color: green;
-            width: 90vw;
-            height: 90vh;
-            max-width: 800px;
-            max-height: 800px;
+            width: 100%;
+            height: auto;
             box-sizing: border-box;
             touch-action: none; /* Prevent default touch behaviors on canvas */
         }
 
-        #button-container, #action-buttons {
+        #button-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            width: 90vw;
-            max-width: 800px;
-            margin-top: 15px;
+            width: 100%;
+            margin-top: 10px;
         }
 
         button {
-            margin: 8px;
-            padding: 16px 24px;
+            margin: 5px;
+            padding: 12px 16px;
             cursor: pointer;
             background-color: #4CAF50;
             color: white;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             flex: 1 1 40%;
-            font-size: 1.2em;
-            min-width: 120px;
-            transition: background-color 0.3s;
+            font-size: 1em;
+            min-width: 100px; /* Ensure buttons are not too small */
         }
 
         button:hover {
             background-color: #367c39;
         }
 
+        /* Additional Buttons */
+        #action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
         /* Display Sections */
         .display-section {
-            margin-top: 15px;
-            font-size: 1.2em;
+            margin-top: 10px;
+            font-size: 1em;
             text-align: center;
         }
 
         .out-icon {
             display: inline-block;
-            width: 14px;
-            height: 14px;
+            width: 10px;
+            height: 10px;
             background-color: red;
             border-radius: 50%;
-            margin-right: 4px;
+            margin-right: 2px;
         }
 
         /* Media Queries for Smaller Screens */
         @media (max-width: 480px) {
-            canvas {
-                width: 95vw;
-                height: 70vh;
-                max-width: none;
-                max-height: none;
-            }
-
             button {
-                padding: 14px 20px;
-                font-size: 1em;
-                flex: 1 1 45%;
-                min-width: 100px;
+                padding: 10px 12px;
+                font-size: 0.9em;
+                flex: 1 1 %;
             }
 
             .display-section {
-                font-size: 1em;
+                font-size: 0.9em;
             }
         }
     </style>
@@ -133,7 +124,7 @@
 
     <script>
         // **Global Speed Factor**
-        const SPEED_FACTOR = 0.55; // 55% of original speed
+        const SPEED_FACTOR = 0.55; // 45% of original speed
 
         // Runner Class
         class Runner {
@@ -401,15 +392,15 @@
         const canvas = document.getElementById('baseballCanvas');
         const ctx = canvas.getContext('2d');
 
-        let canvasWidth = 800; // Initial canvas width
-        let canvasHeight = 800; // Initial canvas height
+        let canvasWidth = 500;
+        let canvasHeight = 500;
 
         // Define Base Coordinates
         const base_coords = {
-            "home": [canvasWidth / 2, canvasHeight * 0.85],
-            "first": [canvasWidth * 0.75, canvasHeight * 0.65],
-            "second": [canvasWidth / 2, canvasHeight * 0.45],
-            "third": [canvasWidth * 0.25, canvasHeight * 0.65]
+            "home": [canvasWidth / 2, canvasHeight * 0.8],
+            "first": [canvasWidth * 0.7, canvasHeight * 0.6],
+            "second": [canvasWidth / 2, canvasHeight * 0.4],
+            "third": [canvasWidth * 0.3, canvasHeight * 0.6]
         };
 
         // Initialize Game Logic
@@ -423,8 +414,8 @@
             // Calculate the desired width and height based on the container's width
             const container = document.getElementById('game-container');
             const computedStyle = getComputedStyle(container);
-            const width = Math.min(window.innerWidth, 1200) * 0.9; // 90% of viewport width, max 1200px
-            const height = Math.min(window.innerHeight, 900) * 0.9; // 90% of viewport height, max 900px
+            const width = parseInt(computedStyle.width) - 20; // Subtract padding
+            const height = width; // Keep canvas square
 
             // Set the canvas CSS size
             canvas.style.width = `${width}px`;
@@ -440,10 +431,10 @@
 
             // Update base coordinates based on new canvas size
             logic.base_coords = {
-                "home": [canvasWidth / 2, canvasHeight * 0.85],
-                "first": [canvasWidth * 0.75, canvasHeight * 0.65],
-                "second": [canvasWidth / 2, canvasHeight * 0.45],
-                "third": [canvasWidth * 0.25, canvasHeight * 0.65]
+                "home": [canvasWidth / 2, canvasHeight * 0.8],
+                "first": [canvasWidth * 0.7, canvasHeight * 0.6],
+                "second": [canvasWidth / 2, canvasHeight * 0.4],
+                "third": [canvasWidth * 0.3, canvasHeight * 0.6]
             };
 
             // Reset the game to update base positions
@@ -455,12 +446,8 @@
         // Initialize the canvas size
         resizeCanvas();
 
-        // Adjust canvas size on window resize with debounce
-        let resizeTimeout;
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(resizeCanvas, 200);
-        });
+        // Adjust canvas size on window resize
+        window.addEventListener('resize', resizeCanvas);
 
         // Reset the game scenario
         function resetScenario() {
@@ -527,7 +514,7 @@
                 if (!runner.isOut) {
                     const [x, y] = runner.pos;
                     const distance = Math.hypot(clickX - x, clickY - y);
-                    const runnerRadius = canvasWidth * 0.025; // Enlarged runner size
+                    const runnerRadius = canvasWidth * 0.02; // Dynamic runner size
                     if (distance < runnerRadius * 1.5) { // Increased sensitivity
                         runner_to_tag = runner;
                         tagged = true;
@@ -545,7 +532,7 @@
             for (const baseName in logic.base_coords) {
                 const [bx, by] = logic.base_coords[baseName];
                 const baseDistance = Math.hypot(clickX - bx, clickY - by);
-                const baseRadius = canvasWidth * 0.035; // Enlarged base size
+                const baseRadius = canvasWidth * 0.03; // Dynamic base size
                 if (baseDistance < baseRadius * 1.5) { // Increased sensitivity
                     for (const runner of logic.runners) {
                         if (runner.target === baseName && !runner.isOut) {
@@ -559,7 +546,7 @@
             // Check for interactions on pitcher's mound
             const mound_x = (logic.base_coords.home[0] + logic.base_coords.second[0]) / 2;
             const mound_y = (logic.base_coords.home[1] + logic.base_coords.second[1]) / 2;
-            const mound_radius = canvasWidth * 0.025; // Enlarged mound radius
+            const mound_radius = canvasWidth * 0.02;
             const moundDistance = Math.hypot(clickX - mound_x, clickY - mound_y);
 
             if (moundDistance < mound_radius * 5) {
@@ -615,7 +602,7 @@
             // Draw the infield diamond (Brown Polygon)
             ctx.fillStyle = "brown";
             ctx.strokeStyle = "white";
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(home[0], home[1]);
             ctx.lineTo(first[0], first[1]);
@@ -638,10 +625,10 @@
             }
 
             // Foul lines (White lines extended from home)
-            const home_first_ext = extended_line(home[0], home[1], first[0], first[1], canvasWidth * 0.5);
-            const home_third_ext = extended_line(home[0], home[1], third[0], third[1], canvasWidth * 0.5);
+            const home_first_ext = extended_line(home[0], home[1], first[0], first[1], canvasWidth * 0.4);
+            const home_third_ext = extended_line(home[0], home[1], third[0], third[1], canvasWidth * 0.4);
             ctx.strokeStyle = "white";
-            ctx.lineWidth = 3;
+            ctx.lineWidth = 2;
 
             // Draw first foul line
             ctx.beginPath();
@@ -657,10 +644,10 @@
 
             // Inverted fence (Gray Arc)
             const fence_center_x = canvasWidth / 2;
-            const fence_center_y = canvasHeight * 0.55; // Adjusted center Y
-            const fence_radius = canvasWidth * 0.4; // Adjusted radius
+            const fence_center_y = canvasHeight * 0.59; // Adjusted center Y
+            const fence_radius = canvasWidth * 0.36; // Adjusted radius
             ctx.strokeStyle = "gray";
-            ctx.lineWidth = 4;
+            ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.arc(fence_center_x, fence_center_y, fence_radius, Math.PI, Math.PI * 2);
             ctx.stroke();
@@ -668,23 +655,21 @@
             // Pitcher's mound (Tan Circle)
             const mx = (home[0] + second[0]) / 2;
             const my = (home[1] + second[1]) / 2;
-            const mound_radius = canvasWidth * 0.03; // Enlarged mound radius
+            const mound_radius = canvasWidth * 0.02; // Adjusted mound radius
             ctx.fillStyle = "tan";
             ctx.strokeStyle = "black";
-            ctx.lineWidth = 2;
             ctx.beginPath();
             ctx.arc(mx, my, mound_radius, 0, 2 * Math.PI);
             ctx.fill();
             ctx.stroke();
 
             // Draw bases (Colored Circles)
-            const BASE_RADIUS = canvasWidth * 0.04; // Enlarged base radius
+            const BASE_RADIUS = canvasWidth * 0.03;
             for (const base_name in bc) {
                 const [x, y] = bc[base_name];
                 const color = logic.base_colors[base_name];
                 ctx.fillStyle = color;
                 ctx.strokeStyle = "black";
-                ctx.lineWidth = 3;
                 ctx.beginPath();
                 ctx.arc(x, y, BASE_RADIUS, 0, 2 * Math.PI);
                 ctx.fill();
@@ -692,9 +677,9 @@
 
                 // Label the base
                 ctx.fillStyle = "white";
-                ctx.font = `${canvasWidth * 0.02}px Arial`; // Enlarged font size
+                ctx.font = `${canvasWidth * 0.015}px Arial`; // Dynamic font size
                 ctx.textAlign = "center";
-                ctx.fillText(base_name.toUpperCase(), x, y - BASE_RADIUS - 10);
+                ctx.fillText(base_name.toUpperCase(), x, y - BASE_RADIUS - 5);
             }
         }
 
@@ -705,9 +690,8 @@
                     const [x, y] = r.pos;
                     ctx.fillStyle = "red";
                     ctx.strokeStyle = "black";
-                    ctx.lineWidth = 2;
                     ctx.beginPath();
-                    ctx.arc(x, y, canvasWidth * 0.025, 0, 2 * Math.PI); // Enlarged runner size
+                    ctx.arc(x, y, canvasWidth * 0.02, 0, 2 * Math.PI); // Dynamic runner size
                     ctx.fill();
                     ctx.stroke();
                 }
