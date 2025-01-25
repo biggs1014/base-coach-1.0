@@ -681,13 +681,35 @@
                 ctx.textAlign = "center";
                 ctx.fillText(base_name.toUpperCase(), x, y - BASE_RADIUS - 5);
             }
+			
+			// Draw "Base Coach 1.0" arched text (Logo)
+            ctx.save(); // Save the current context state
 
-			// Draw "Base Coach 1.0" text (Logo)
+			const text = "Base Coach 1.0";
+			const radius = canvasWidth * 0.25;
+			const centerX = canvasWidth / 2;
+			const centerY = canvasHeight / 2 - radius * 0.4;
             ctx.fillStyle = "white";
-			ctx.font = `${canvasWidth * 0.05}px Arial`;
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.fillText("Base Coach 1.0", canvasWidth / 2, canvasHeight / 2); // Centered on the field
+
+            ctx.font = `${canvasWidth * 0.06}px Arial`;
+            const textWidth = ctx.measureText(text).width;
+            const startAngle = -Math.PI / 2;
+            const angleIncrement = Math.PI / (text.length + 1);
+
+			for (let i = 0; i < text.length; i++) {
+                const char = text[i];
+                const angle = startAngle + angleIncrement * (i + 1);
+				const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                ctx.save();
+                ctx.translate(x, y);
+				ctx.rotate(angle+Math.PI/2);
+                ctx.fillText(char, 0, 0);
+                ctx.restore();
+            }
+
+            ctx.restore(); // Restore the saved context state
         }
 
         // Draw the runners on the field
