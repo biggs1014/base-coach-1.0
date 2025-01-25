@@ -37,6 +37,7 @@
             width: 100%;
             height: auto;
             box-sizing: border-box;
+            touch-action: none; /* Prevent default touch behaviors on canvas */
         }
 
         #button-container {
@@ -474,21 +475,43 @@
             logic.recordOut();
         }
 
-        // Handle Canvas Clicks for Tagging Runners or Bases
-        function handleCanvasClick(event) {
+        // Handle Canvas Interactions for Tagging Runners or Bases
+        function handleCanvasInteraction(event) {
+            event.preventDefault(); // Prevent default touch behaviors like scrolling
+
+            let pointerX, pointerY;
+
+            if (event.type.startsWith('touch')) {
+                // Handle touch events
+                if (event.touches.length > 0) {
+                    pointerX = event.touches[0].clientX;
+                    pointerY = event.touches[0].clientY;
+                } else {
+                    return; // No touch points available
+                }
+            } else {
+                // Handle pointer or mouse events
+                pointerX = event.clientX;
+                pointerY = event.clientY;
+            }
+
             const canvasRect = canvas.getBoundingClientRect();
-            const clickX = (event.clientX - canvasRect.left) * (canvas.width / canvasRect.width);
-            const clickY = (event.clientY - canvasRect.top) * (canvas.height / canvasRect.height);
+            const scaleX = canvas.width / canvasRect.width;
+            const scaleY = canvas.height / canvasRect.height;
+
+            const clickX = (pointerX - canvasRect.left) * scaleX;
+            const clickY = (pointerY - canvasRect.top) * scaleY;
 
             let tagged = false;
             let runner_to_tag = null;
 
-            // Check for clicks on runners
+            // Check for interactions on runners
             for (const runner of logic.runners) {
                 if (!runner.isOut) {
                     const [x, y] = runner.pos;
                     const distance = Math.hypot(clickX - x, clickY - y);
-                    if (distance < 20 * (canvas.width / parseInt(getComputedStyle(canvas).width))) {
+                    const runnerRadius = canvasWidth * 0.02; // Dynamic runner size
+                    if (distance < runnerRadius * 1.5) { // Increased sensitivity
                         runner_to_tag = runner;
                         tagged = true;
                         break;
@@ -501,11 +524,12 @@
                 return;
             }
 
-            // Check for clicks on bases
+            // Check for interactions on bases
             for (const baseName in logic.base_coords) {
                 const [bx, by] = logic.base_coords[baseName];
                 const baseDistance = Math.hypot(clickX - bx, clickY - by);
-                if (baseDistance < 20 * (canvas.width / parseInt(getComputedStyle(canvas).width))) {
+                const baseRadius = canvasWidth * 0.03; // Dynamic base size
+                if (baseDistance < baseRadius * 1.5) { // Increased sensitivity
                     for (const runner of logic.runners) {
                         if (runner.target === baseName && !runner.isOut) {
                             tagRunnerOut(runner, baseName);
@@ -515,7 +539,7 @@
                 }
             }
 
-            // Check for clicks on pitcher's mound
+            // Check for interactions on pitcher's mound
             const mound_x = (logic.base_coords.home[0] + logic.base_coords.second[0]) / 2;
             const mound_y = (logic.base_coords.home[1] + logic.base_coords.second[1]) / 2;
             const mound_radius = canvasWidth * 0.02;
@@ -670,8 +694,11 @@
             }
         }
 
-        // Event Listener for Canvas Clicks
-        canvas.addEventListener('click', handleCanvasClick);
+        // Event Listener for Canvas Interactions using Pointer Events
+        canvas.addEventListener('pointerdown', handleCanvasInteraction);
+
+        // Optional: Add touch event listeners for broader compatibility
+        canvas.addEventListener('touchstart', handleCanvasInteraction, { passive: false });
 
         // Start the GUI Update Loop
         update_gui();
