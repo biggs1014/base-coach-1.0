@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Base Coach Simulator</title>
+    <title>Triple Play 1.0</title>
     <style>
         /* Reset default margins and paddings */
         * {
@@ -174,13 +174,13 @@
             }
 
             // Record an out and handle inning transitions
-            recordOut() {
-                this.outs++;
-                if (this.outs >= 3) {
-                    this.outs = 0;
-                    this.nextInning();
-                    this.clearBases(); // Clear the bases on the 3rd out
-                }
+              recordOut() {
+                  this.outs++;
+                  if (this.outs >= 3) {
+                      this.outs = 0;
+                      this.nextInning();
+                      this.clearBases(); // Clear the bases on the 3rd out
+                  }
             }
             //Clear all runners on base
             clearBases(){
@@ -484,12 +484,12 @@
          // Tag a runner as out
          function tagRunnerOut(runner, base_name) {
              runner.isOut = true;
-             // Check if this runner was on the base, if so only reset the base if there are no other runners
+              // Check if this runner was on the base, if so only reset the base if there are no other runners
               const otherRunnersOnBase = logic.runners.some(r => r !== runner && r.base === (base_name || runner.base) && !r.isOut);
-             if (!otherRunnersOnBase) {
-                 logic.set_base_default(base_name || runner.base);
-            }
-              logic.recordOut();
+              if (!otherRunnersOnBase) {
+                   logic.set_base_default(base_name || runner.base);
+              }
+             logic.recordOut();
 
         }
 
@@ -551,10 +551,10 @@
                     }
                      // If no runner is targetted, add a runner to this base if no runner exists
                      const runnerOnBase = logic.runners.some(r => r.base === baseName && !r.isOut);
-                     if (!runnerOnBase) {
+                      if (!runnerOnBase && logic.base_states[baseName] !== logic.RED) { // If there's not a runner on base AND the base is not occupied then add a runner
                          logic.add_runner(baseName);
-                           return;
-                     }
+                            return;
+                    }
                 }
             }
 
@@ -702,7 +702,7 @@
               // Draw "Base Coach 1.0" text (Logo) at the top of the screen
              ctx.save(); // Save the current context state
 
-            const text = "Triple Play 1.0";
+            const text = "TRIPLE PLAY 1.0";
             const centerX = canvasWidth / 2; // Center horizontally
             const centerY = canvasHeight * 0.1; // Position text near the top of the screen
              ctx.fillStyle = "white";
