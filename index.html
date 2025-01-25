@@ -129,7 +129,8 @@
                 this.pos = pos;
                 this.base = base_name;
                 this.target = target;
-                this.speed = Math.random() * (0.020 - 0.008) + 0.008;
+                // **Slowing down the runner's speed by 20%**
+                this.speed = (Math.random() * (0.020 - 0.008) + 0.008) * 0.8; // Reduced speed
                 this.current_fraction = 0;
                 this.isOut = false;
             }
