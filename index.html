@@ -371,18 +371,18 @@
                         runner.current_fraction = 0;
                     }
 
-					// Reset the colors for bases that are no longer flashing or where a runner was tagged out
-					for (const base_name in logic.base_states) {
-						if (this.base_states[base_name] === this.FLASHING && !transitions.some(trans => trans.runner.target === base_name && !trans.runner.isOut)) {
-							const onBase = this.runners.some(r => r.base === base_name && !r.isOut);
-							if (!onBase)
-								this.set_base_default(base_name);
-						}
-						const isOccupied = this.runners.some(r => r.base == base_name && !r.isOut);
-						if (!isOccupied && this.base_states[base_name] === this.RED) {
-							this.set_base_default(base_name);
-						}
-					}
+                    // Reset the colors for bases that are no longer flashing or where a runner was tagged out
+                    for (const base_name in logic.base_states) {
+                        if (this.base_states[base_name] === this.FLASHING && !transitions.some(trans => trans.runner.target === base_name && !trans.runner.isOut)) {
+                            const onBase = this.runners.some(r => r.base === base_name && !r.isOut);
+                            if (!onBase)
+                                this.set_base_default(base_name);
+                        }
+                        const isOccupied = this.runners.some(r => r.base == base_name && !r.isOut);
+                        if (!isOccupied && this.base_states[base_name] === this.RED) {
+                            this.set_base_default(base_name);
+                        }
+                    }
 
                 }).bind(this)(this, transitions);
             }
@@ -544,7 +544,7 @@
             }
 			
 			// Check for interactions on pitcher's mound
-			const mound_x = (logic.base_coords.home[0] + logic.base_coords.second[0]) / 2;
+            const mound_x = (logic.base_coords.home[0] + logic.base_coords.second[0]) / 2;
             const mound_y = (logic.base_coords.home[1] + logic.base_coords.second[1]) / 2;
             const mound_radius = canvasWidth * 0.02;
             const moundDistance = Math.hypot(clickX - mound_x, clickY - mound_y);
@@ -571,18 +571,22 @@
             const outDisplay = document.getElementById('out-display');
             outDisplay.innerHTML = `Outs: ${Array(logic.outs).fill('<span class="out-icon"></span>').join('')}`;
 
+
+
             // Handle Runner Animations
             if (animation_gen !== null) {
                 const nextResult = animation_gen.next();
                 if (!nextResult.done) {
                     draw_field();
                     draw_runners();
+					  draw_instructions();
                 } else {
                     animation_gen = null;
                 }
             } else {
                 draw_field();
                 draw_runners();
+				  draw_instructions();
             }
 
             // Request the next frame
@@ -683,20 +687,20 @@
             }
 			
 			// Draw "Base Coach 1.0" text (Logo) at the top of the screen
-ctx.save(); // Save the current context state
+			ctx.save(); // Save the current context state
 
-const text = "Base Coach 1.0";
-const centerX = canvasWidth / 2; // Center horizontally
-const centerY = canvasHeight * 0.1;  // Position text near the top of the screen
-ctx.fillStyle = "white";
-ctx.textAlign = "center"; // Center align the text
-ctx.textBaseline = "middle"; // Center text vertically
+			const text = "Base Coach 1.0";
+			const centerX = canvasWidth / 2; // Center horizontally
+			const centerY = canvasHeight * 0.1; // Position text near the top of the screen
+			ctx.fillStyle = "white";
+			ctx.textAlign = "center"; // Center align the text
+			ctx.textBaseline = "middle"; // Center text vertically
 
-ctx.font = `${canvasWidth * 0.06}px Arial`;
+			ctx.font = `${canvasWidth * 0.06}px Arial`;
 
-ctx.fillText(text, centerX, centerY);
+			ctx.fillText(text, centerX, centerY);
 
-ctx.restore(); // Restore the original context state
+			ctx.restore(); // Restore the original context state
         }
 
         // Draw the runners on the field
@@ -713,6 +717,45 @@ ctx.restore(); // Restore the original context state
                 }
             }
         }
+
+		  //Draw instructions on the canvas
+		  function draw_instructions() {
+				ctx.save();
+
+            // Instruction box size, padding and margin values
+				const box_width = canvasWidth * 0.4; // Reduced width
+            const box_height = canvasHeight * 0.20; // Reduced height
+				const margin = canvasWidth * 0.02;
+				const padding = canvasWidth * 0.01;
+				const text_line_height = canvasHeight * 0.024; // Adjusted text line height
+
+				const box_x = margin; // Positioned at the far left
+				const box_y = canvasHeight * 0.75 + margin; // Position at the bottom
+
+				ctx.fillStyle = "rgba(0,0,0,0.7)";
+				ctx.fillRect(box_x, box_y, box_width, box_height);
+
+				ctx.fillStyle = "white";
+            ctx.font = `${canvasWidth * 0.018}px Arial`; // Increased font size slightly
+				ctx.textAlign = "left";
+				ctx.textBaseline = "top";
+
+				const instructions = [
+					  "Instructions:",
+					  "1. Add Runners using buttons.",
+					  "2. Tap Pitcher's Mound or 'Move All'.",
+					  "3. Tap Runner or Flashing Base to tag.",
+					  "4. Score, Inning, and Outs tracked.",
+					   "5. Use 'Reset' to start over."
+				];
+
+
+				instructions.forEach((line, index) => {
+					ctx.fillText(line, box_x + padding, box_y + padding + (text_line_height * index));
+				});
+
+				ctx.restore();
+		  }
 
         // Event Listener for Canvas Interactions using Pointer Events
         canvas.addEventListener('pointerdown', handleCanvasInteraction);
