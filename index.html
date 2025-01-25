@@ -682,34 +682,21 @@
                 ctx.fillText(base_name.toUpperCase(), x, y - BASE_RADIUS - 5);
             }
 			
-			// Draw "Base Coach 1.0" arched text (Logo)
-            ctx.save(); // Save the current context state
+			// Draw "Base Coach 1.0" text (Logo) at the top of the screen
+ctx.save(); // Save the current context state
 
-			const text = "Base Coach 1.0";
-			const radius = canvasWidth * 0.25;
-			const centerX = canvasWidth / 2;
-			const centerY = canvasHeight / 2 - radius * 0.4;
-            ctx.fillStyle = "white";
+const text = "Base Coach 1.0";
+const centerX = canvasWidth / 2; // Center horizontally
+const centerY = canvasHeight * 0.1;  // Position text near the top of the screen
+ctx.fillStyle = "white";
+ctx.textAlign = "center"; // Center align the text
+ctx.textBaseline = "middle"; // Center text vertically
 
-            ctx.font = `${canvasWidth * 0.06}px Arial`;
-            const textWidth = ctx.measureText(text).width;
-            const startAngle = -Math.PI / 2;
-            const angleIncrement = Math.PI / (text.length + 1);
+ctx.font = `${canvasWidth * 0.06}px Arial`;
 
-			for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                const angle = startAngle + angleIncrement * (i + 1);
-				const x = centerX + radius * Math.cos(angle);
-                const y = centerY + radius * Math.sin(angle);
+ctx.fillText(text, centerX, centerY);
 
-                ctx.save();
-                ctx.translate(x, y);
-				ctx.rotate(angle+Math.PI/2);
-                ctx.fillText(char, 0, 0);
-                ctx.restore();
-            }
-
-            ctx.restore(); // Restore the saved context state
+ctx.restore(); // Restore the original context state
         }
 
         // Draw the runners on the field
