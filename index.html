@@ -564,119 +564,82 @@
         // Adjust canvas size on window resize
         window.addEventListener('resize', resizeCanvas);
 
-        // Initialize WebSocket Connections
-    let socket1;
-    let socket2;
-    let socket3;
-    let socket4;
+        // ESP32 IP Addresses and Port
+const esp32IPs = [
+  '192.168.1.129', // ESP32-1 (First Base)
+  '192.168.1.146', // ESP32-2 (Second Base)
+  '192.168.1.116', // ESP32-3 (Third Base)
+  '192.168.1.132', // ESP32-4 (Home Base)
+];
+const esp32Port = 81; // WebSocket Port
 
-    // ESP32 IP Addresses and Port
-    const esp32IP1 = '192.168.1.129'; // First ESP32 IP (First Base)
-    const esp32IP2 = '192.168.1.146'; // Second ESP32 IP (Second Base)
-    const esp32IP3 = '192.168.1.116'; // Third ESP32 IP (Third Base)
-    const esp32IP4 = '192.168.1.132'; // Fourth ESP32 IP (Home Base)
-    const esp32Port = 81; // WebSocket Port (Ensure all ESP32s use the same port)
+// WebSocket connections
+let sockets = [null, null, null, null];
 
-    function initWebSockets() {
-      // Initialize WebSocket for First ESP32 (First Base)
-      socket1 = new WebSocket(`ws://$:$/`);
+// Initialize WebSocket for a specific ESP32
+function initWebSocket(index) {
+  const ip = esp32IPs[index];
+  const url = `ws://${ip}:${esp32Port}/`;
 
-      socket1.onopen = function () {
-        console.log('WebSocket1 connection established with ESP32-1 (First Base)');
-        document.getElementById('status-display-1').textContent = 'ESP32-1 Status: Connected';
-      };
+  const socket = new WebSocket(url);
 
-      socket1.onmessage = function (event) {
-        console.log('Message from ESP32-1 (First Base):', event.data);
-        handleESP32Message(event.data, 1);
-      };
+  socket.onopen = () => {
+    console.log(`WebSocket${index + 1} connection established with ESP32-${index + 1}`);
+    document.getElementById(`status-display-${index + 1}`).textContent = `ESP32-${index + 1} Status: Connected`;
+  };
 
-      socket1.onclose = function (event) {
-        console.log('WebSocket1 connection closed. Reconnecting in 3 seconds...', event.reason);
-        document.getElementById('status-display-1').textContent = 'ESP32-1 Status: Disconnected';
-        setTimeout(initWebSockets, 3000); // Attempt to reconnect after 3 seconds
-      };
+  socket.onmessage = (event) => {
+    console.log(`Message from ESP32-${index + 1}:`, event.data);
+    handleESP32Message(event.data, index + 1);
+  };
 
-      socket1.onerror = function (error) {
-        console.error('WebSocket1 error:', error);
-        socket1.close();
-      };
+  socket.onclose = (event) => {
+    console.log(`WebSocket${index + 1} connection closed. Reconnecting in 3 seconds...`, event.reason);
+    document.getElementById(`status-display-${index + 1}`).textContent = `ESP32-${index + 1} Status: Disconnected`;
+    setTimeout(() => initWebSocket(index), 3000); // Attempt to reconnect
+  };
 
-      // Initialize WebSocket for Second ESP32 (Second Base)
-      socket2 = new WebSocket(`ws://$:$/`);
+  socket.onerror = (error) => {
+    console.error(`WebSocket${index + 1} error:`, error);
+    socket.close(); // Close and trigger reconnect
+  };
 
-      socket2.onopen = function () {
-        console.log('WebSocket2 connection established with ESP32-2 (Second Base)');
-        document.getElementById('status-display-2').textContent = 'ESP32-2 Status: Connected';
-      };
+  sockets[index] = socket; // Save the socket
+}
 
-      socket2.onmessage = function (event) {
-        console.log('Message from ESP32-2 (Second Base):', event.data);
-        handleESP32Message(event.data, 2);
-      };
+// Initialize all WebSocket connections
+function initWebSockets() {
+  for (let i = 0; i < esp32IPs.length; i++) {
+    initWebSocket(i);
+  }
+}
 
-      socket2.onclose = function (event) {
-        console.log('WebSocket2 connection closed. Reconnecting in 3 seconds...', event.reason);
-        document.getElementById('status-display-2').textContent = 'ESP32-2 Status: Disconnected';
-        setTimeout(initWebSockets, 3000);
-      };
+// Send a message to a specific ESP32
+function sendWebSocketMessage(message, target = 1) {
+  const index = target - 1; // Adjust for 0-based array indexing
+  const socket = sockets[index];
+  if (socket && socket.readyState === WebSocket.OPEN) {
+    socket.send(message);
+    console.log(`Sent to ESP32-${target}: ${message}`);
+  } else {
+    console.log(`WebSocket${target} is not open. Unable to send message: ${message}`);
+  }
+}
 
-      socket2.onerror = function (error) {
-        console.error('WebSocket2 error:', error);
-        socket2.close();
-      };
+// Handle ESP32 messages
+function handleESP32Message(message, sourceESP) {
+  // Implement your logic based on the message and sourceESP
+  if (message === 'RUNNER_ADDED') {
+    console.log(`Runner added successfully on ESP32-${sourceESP}`);
+  } else if (message.startsWith('ERROR')) {
+    console.error(`Error from ESP32-${sourceESP}: ${message}`);
+  }
+  // Add more conditions as needed
+}
 
-      // Initialize WebSocket for Third ESP32 (Third Base)
-      socket3 = new WebSocket(`ws://$:$/`);
+// Initialize WebSockets when the window loads
+window.onload = initWebSockets;
 
-      socket3.onopen = function () {
-        console.log('WebSocket3 connection established with ESP32-3 (Third Base)');
-        document.getElementById('status-display-3').textContent = 'ESP32-3 Status: Connected';
-      };
-
-      socket3.onmessage = function (event) {
-        console.log('Message from ESP32-3 (Third Base):', event.data);
-        handleESP32Message(event.data, 3);
-      };
-
-      socket3.onclose = function (event) {
-        console.log('WebSocket3 connection closed. Reconnecting in 3 seconds...', event.reason);
-        document.getElementById('status-display-3').textContent = 'ESP32-3 Status: Disconnected';
-        setTimeout(initWebSockets, 3000);
-      };
-
-      socket3.onerror = function (error) {
-        console.error('WebSocket3 error:', error);
-        socket3.close();
-      };
-
-      // Initialize WebSocket for Fourth ESP32 (Home Base)
-      socket4 = new WebSocket(`ws://$:$/`);
-
-      socket4.onopen = function () {
-        console.log('WebSocket4 connection established with ESP32-4 (Home Base)');
-        document.getElementById('status-display-4').textContent = 'ESP32-4 Status: Connected';
-      };
-
-      socket4.onmessage = function (event) {
-        console.log('Message from ESP32-4 (Home Base):', event.data);
-        handleESP32Message(event.data, 4);
-      };
-
-      socket4.onclose = function (event) {
-        console.log('WebSocket4 connection closed. Reconnecting in 3 seconds...', event.reason);
-        document.getElementById('status-display-4').textContent = 'ESP32-4 Status: Disconnected';
-        setTimeout(initWebSockets, 3000);
-      };
-
-      socket4.onerror = function (error) {
-        console.error('WebSocket4 error:', error);
-        socket4.close();
-      };
-    }
-
-        // Initialize WebSockets when the window loads
-        window.onload = initWebSockets;
 
         /**
          * Sends a message to the specified ESP32.
