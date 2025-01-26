@@ -2,1047 +2,1002 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRIPLE PLAY 1.0</title>
-    <style>
-        /* Reset default margins and paddings */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRIPLE PLAY 1.0</title>
+  <style>
+    /* Reset default margins and paddings */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-        body {
-            font-family: sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding: 10px;
-            background: linear-gradient(to bottom, #ff5733, #ffcc00);
-            /* Red gradient background */
-        }
+    body {
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 10px;
+      background: linear-gradient(to bottom, #ff5733, #ffcc00);
+      /* Red gradient background */
+    }
 
-        #game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 800px;
-            /* Increased maximum width to accommodate additional status displays */
-            background-color: #000000;
-            /* Black container for card look */
-            border: 2px solid black;
-            padding: 10px;
-        }
+    #game-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      max-width: 800px;
+      /* Increased maximum width to accommodate additional status displays */
+      background-color: #000000;
+      /* Black container for card look */
+      border: 2px solid black;
+      padding: 10px;
+    }
 
-        /* Responsive Canvas */
-        canvas {
-            border: 1px solid black;
-            background-color: green;
-            width: 100%;
-            height: auto;
-            box-sizing: border-box;
-            touch-action: none;
-            /* Prevent default touch behaviors on canvas */
-        }
+    /* Responsive Canvas */
+    canvas {
+      border: 1px solid black;
+      background-color: green;
+      width: 100%;
+      height: auto;
+      box-sizing: border-box;
+      touch-action: none;
+      /* Prevent default touch behaviors on canvas */
+    }
 
-        #button-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 100%;
-            margin-top: 10px;
-        }
+    #button-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      margin-top: 10px;
+    }
 
-        button {
-            margin: 5px;
-            padding: 12px 16px;
-            cursor: pointer;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            flex: 1 1 40%;
-            font-size: 1em;
-            min-width: 100px;
-            /* Ensure buttons are not too small */
-            color: black;
-            background: white;
-            border: 2px solid black;
-        }
+    button {
+      margin: 5px;
+      padding: 12px 16px;
+      cursor: pointer;
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      flex: 1 1 40%;
+      font-size: 1em;
+      min-width: 100px;
+      /* Ensure buttons are not too small */
+      color: black;
+      background: white;
+      border: 2px solid black;
+    }
 
-        button:hover {
-            background: #cccccc;
-            /* Gray hover */
-        }
+    button:hover {
+      background: #cccccc;
+      /* Gray hover */
+    }
 
-        /* Additional Buttons */
-        #action-buttons {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            width: 100%;
-            margin-top: 10px;
-        }
+    /* Additional Buttons */
+    #action-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+      margin-top: 10px;
+    }
 
-        /* Display Sections */
-        .display-section {
-            margin-top: 10px;
-            font-size: 1em;
-            text-align: center;
-            color: white;
-            text-shadow: 2px 2px 4px #000000;
-            /* Black text shadow for visibility on bright background */
-        }
+    /* Display Sections */
+    .display-section {
+      margin-top: 10px;
+      font-size: 1em;
+      text-align: center;
+      color: white;
+      text-shadow: 2px 2px 4px #000000;
+      /* Black text shadow for visibility on bright background */
+    }
 
-        .out-icon {
-            display: inline-block;
-            width: 10px;
-            height: 10px;
-            background-color: red;
-            border-radius: 50%;
-            margin-right: 2px;
-        }
+    .out-icon {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      border-radius: 50%;
+      margin-right: 2px;
+    }
 
-        /* Status Displays */
-        .status-display {
-            margin-top: 10px;
-            font-size: 0.9em;
-            text-align: center;
-            color: #00FF00; /* Green color for connected status */
-            text-shadow: 1px 1px 2px #000000;
-        }
+    /* Status Displays */
+    .status-display {
+      margin-top: 10px;
+      font-size: 0.9em;
+      text-align: center;
+      color: #00FF00;
+      /* Green color for connected status */
+      text-shadow: 1px 1px 2px #000000;
+    }
 
-        /* Media Queries for Smaller Screens */
-        @media (max-width: 480px) {
-            button {
-                padding: 10px 12px;
-                font-size: 0.9em;
-                flex: 1 1 45%;
-            }
+    /* Media Queries for Smaller Screens */
+    @media (max-width: 480px) {
+      button {
+        padding: 10px 12px;
+        font-size: 0.9em;
+        flex: 1 1 45%;
+      }
 
-            .display-section {
-                font-size: 0.9em;
-            }
+      .display-section {
+        font-size: 0.9em;
+      }
 
-            .status-display {
-                font-size: 0.8em;
-            }
-        }
-    </style>
+      .status-display {
+        font-size: 0.8em;
+      }
+    }
+  </style>
 </head>
 
 <body>
-    <div id="game-container">
-        <canvas id="baseballCanvas"></canvas>
-        <div id="button-container">
-            <button onclick="addRunner('home')">Add Runner HOME</button>
-            <button onclick="addRunner('first')">Add Runner 1ST</button>
-            <button onclick="addRunner('second')">Add Runner 2ND</button>
-            <button onclick="addRunner('third')">Add Runner 3RD</button>
-        </div>
-        <div id="action-buttons">
-            <button onclick="moveRunners()">MOVE ALL RUNNERS</button>
-            <button onclick="resetScenario()">RESET</button>
-        </div>
-        <div id="score-display" class="display-section"></div>
-        <div id="inning-display" class="display-section"></div>
-        <div id="out-display" class="display-section"></div>
-        <!-- Status Displays for ESP32 Devices -->
-        <div id="status-display-1" class="status-display">ESP32-1 Status: Connecting...</div>
-        <div id="status-display-2" class="status-display">ESP32-2 Status: Connecting...</div>
-        <div id="status-display-3" class="status-display">ESP32-3 Status: Connecting...</div>
-        <div id="status-display-4" class="status-display">ESP32-4 Status: Connecting...</div>
+  <div id="game-container">
+    <canvas id="baseballCanvas"></canvas>
+    <div id="button-container">
+      <button onclick="addRunner('home')">Add Runner HOME</button>
+      <button onclick="addRunner('first')">Add Runner 1ST</button>
+      <button onclick="addRunner('second')">Add Runner 2ND</button>
+      <button onclick="addRunner('third')">Add Runner 3RD</button>
     </div>
+    <div id="action-buttons">
+      <button onclick="moveRunners()">MOVE ALL RUNNERS</button>
+      <button onclick="resetScenario()">RESET</button>
+    </div>
+    <div id="score-display" class="display-section"></div>
+    <div id="inning-display" class="display-section"></div>
+    <div id="out-display" class="display-section"></div>
+    <!-- Status Displays for ESP32 Devices -->
+    <div id="status-display-1" class="status-display">ESP32-1 Status: Connecting...</div>
+    <div id="status-display-2" class="status-display">ESP32-2 Status: Connecting...</div>
+    <div id="status-display-3" class="status-display">ESP32-3 Status: Connecting...</div>
+    <div id="status-display-4" class="status-display">ESP32-4 Status: Connecting...</div>
+  </div>
 
-    <script>
-        // **Global Speed Factor**
-        const SPEED_FACTOR = 0.0560; // 75% of current speed (25% slower)
-        const BASE_SPEED = 1 / 15; // base speed in bases per second making runner take about 15 seconds
+  <script>
+    // **Global Speed Factor**
+    const SPEED_FACTOR = 0.0560; // 75% of current speed (25% slower)
+    const BASE_SPEED = 1 / 15; // base speed in bases per second making runner take about 15 seconds
 
-        // Runner Class
-        class Runner {
-            constructor(pos, base_name, target) {
-                this.pos = pos;
-                this.base = base_name;
-                this.target = target;
-                // Apply the global speed factor
-                this.speed = (BASE_SPEED + (Math.random() * (BASE_SPEED * 0.05) - BASE_SPEED * 0.025)) * SPEED_FACTOR;
-                this.current_fraction = 0;
-                this.isOut = false;
-                this.isMoving = false;
+    // Runner Class
+    class Runner {
+      constructor(pos, base_name, target) {
+        this.pos = pos;
+        this.base = base_name;
+        this.target = target;
+        // Apply the global speed factor
+        this.speed = (BASE_SPEED + (Math.random() * (BASE_SPEED * 0.05) - BASE_SPEED * 0.025)) * SPEED_FACTOR;
+        this.current_fraction = 0;
+        this.isOut = false;
+        this.isMoving = false;
+      }
+    }
+
+    // Game Logic Class
+    class GameLogic {
+      constructor(base_coords) {
+        this.base_coords = base_coords;
+        this.OFF = 0;
+        this.FLASHING = 1;
+        this.RED = 2;
+
+        this.DEFAULT_FLASH_MS = 400;
+        this.MIN_FLASH_MS = 100;
+
+        this.base_states = {};
+        this.base_colors = {};
+        this.last_toggle_time = {};
+        this.dynamic_flash_ms = {};
+
+        this.runners = [];
+
+        // Game Score, Outs, and Inning Data
+        this.homeScore = 0;
+        this.awayScore = 0;
+        this.outs = 0;
+        this.inning = 1;
+        this.topOfInning = true; // Track whether it's the top or bottom of the inning
+
+        for (let name in base_coords) {
+          this.base_states[name] = this.OFF;
+          this.base_colors[name] = "white";
+          this.last_toggle_time[name] = performance.now();
+          this.dynamic_flash_ms[name] = this.DEFAULT_FLASH_MS;
+        }
+      }
+
+      // Record an out and handle inning transitions
+      recordOut() {
+        this.outs++;
+        if (this.outs >= 3) {
+          this.outs = 0;
+          this.nextInning();
+        }
+      }
+
+      // Clear all runners on base
+      clearBases() {
+        this.runners = [];
+        for (const b in this.base_states) {
+          this.set_base_default(b);
+        }
+      }
+
+      // Advance to the next inning
+      nextInning() {
+        if (this.topOfInning) {
+          this.topOfInning = false;
+          this.clearBases();
+        } else {
+          this.inning++;
+          this.topOfInning = true;
+          this.clearBases();
+        }
+      }
+
+      // Score a run based on the inning
+      scoreRun() {
+        if (this.topOfInning) {
+          this.awayScore++;
+        } else {
+          this.homeScore++;
+        }
+      }
+
+      // Reset the game scores and states
+      resetGame() {
+        this.homeScore = 0;
+        this.awayScore = 0;
+        this.outs = 0;
+        this.inning = 1;
+        this.topOfInning = true;
+      }
+
+      // Get the next base in sequence
+      get_next_base(current_base) {
+        switch (current_base) {
+          case "home":
+            return "first";
+          case "first":
+            return "second";
+          case "second":
+            return "third";
+          case "third":
+            return "home";
+          default:
+            return "home";
+        }
+      }
+
+      // Set base to default state
+      set_base_default(base_name) {
+        this.base_states[base_name] = this.OFF;
+        this.base_colors[base_name] = "white";
+        this.dynamic_flash_ms[base_name] = this.DEFAULT_FLASH_MS;
+      }
+
+      // Set base to flashing state
+      set_base_flashing(base_name) {
+        this.base_states[base_name] = this.FLASHING;
+        // Initialize last_toggle_time if not already set
+        if (!this.last_toggle_time[base_name]) {
+          this.last_toggle_time[base_name] = performance.now();
+        }
+        // Start with green when flashing begins
+        if (this.base_colors[base_name] !== "green" && this.base_colors[base_name] !== "white") {
+          this.base_colors[base_name] = "green";
+        }
+      }
+
+      // Set base to red (occupied) state
+      set_base_red(base_name) {
+        this.base_states[base_name] = this.RED;
+        this.base_colors[base_name] = "red";
+      }
+
+      // Remove a runner from a base
+      remove_runner_from_base(runner) {
+        const index = this.runners.indexOf(runner);
+        if (index > -1) {
+          this.runners.splice(index, 1);
+        }
+      }
+
+      // Add a runner to a specified base
+      add_runner(base_name) {
+        // Prevent adding multiple runners to the same base
+        if (this.runners.some(r => r.base === base_name && !r.isOut)) return;
+        const pos = this.get_runner_position(base_name);
+        const target = this.get_next_base(base_name);
+        this.runners.push(new Runner([...pos], base_name, target));
+        this.set_base_flashing(base_name); // Start flashing when a runner is added
+      }
+
+      // Calculate position for runner on the field, accounting for multiple runners
+      get_runner_position(base_name) {
+        const base_pos = this.base_coords[base_name];
+        const current_runners = this.runners.filter(r => r.base === base_name && !r.isOut);
+        const num_runners = current_runners.length;
+        const BASE_RADIUS = canvasWidth * 0.03;
+
+        // Adjust offsets to be dynamic based on how many runners there are on the same base
+        let x_offset = 0;
+        let y_offset = 0;
+
+        if (num_runners === 0) {
+          return base_pos; // If no other runners just use base pos
+        } else {
+          // Calculate offset for each position
+          switch (num_runners) {
+            case 1:
+              x_offset = BASE_RADIUS * 0.75;
+              y_offset = BASE_RADIUS * 0.75;
+              break;
+            case 2:
+              x_offset = BASE_RADIUS * -0.75;
+              y_offset = BASE_RADIUS * 0.75;
+              break;
+            case 3:
+              x_offset = BASE_RADIUS * 0;
+              y_offset = BASE_RADIUS * -0.75;
+              break;
+            default:
+              x_offset = 0;
+              y_offset = 0;
+          }
+        }
+        return [base_pos[0] + x_offset, base_pos[1] + y_offset]
+      }
+
+      // Reset all runners and base states
+      reset_all() {
+        this.runners = [];
+        for (const b in this.base_states) {
+          this.set_base_default(b);
+        }
+        this.resetGame();
+      }
+
+      // Update flashing states based on elapsed time and dynamic intervals
+      update_flashing() {
+        const now = performance.now();
+        for (const base_name in this.base_states) {
+          const state = this.base_states[base_name];
+          if (state === this.FLASHING) {
+            const elapsed = now - this.last_toggle_time[base_name];
+            const interval = this.dynamic_flash_ms[base_name];
+            if (elapsed >= interval) {
+              // Toggle between green and white
+              this.base_colors[base_name] = this.base_colors[base_name] === "green" ? "white" : "green";
+              this.last_toggle_time[base_name] = now;
             }
+          }
+        }
+      }
+
+      // Move all runners and handle base transitions
+      move_all_runners() {
+        if (!this.runners.length) {
+          return null;
         }
 
-        // Game Logic Class
-        class GameLogic {
-            constructor(base_coords) {
-                this.base_coords = base_coords;
-                this.OFF = 0;
-                this.FLASHING = 1;
-                this.RED = 2;
-
-                this.DEFAULT_FLASH_MS = 400;
-                this.MIN_FLASH_MS = 100;
-
-                this.base_states = {};
-                this.base_colors = {};
-                this.last_toggle_time = {};
-                this.dynamic_flash_ms = {};
-
-                this.runners = [];
-
-                // Game Score, Outs, and Inning Data
-                this.homeScore = 0;
-                this.awayScore = 0;
-                this.outs = 0;
-                this.inning = 1;
-                this.topOfInning = true; // Track whether it's the top or bottom of the inning
-
-                for (let name in base_coords) {
-                    this.base_states[name] = this.OFF;
-                    this.base_colors[name] = "white";
-                    this.last_toggle_time[name] = performance.now();
-                    this.dynamic_flash_ms[name] = this.DEFAULT_FLASH_MS;
-                }
+        const transitions = this.runners
+          .filter(runner => !runner.isOut)
+          .map(runner => {
+            const start = [...runner.pos];
+            const end = this.base_coords[runner.target];
+            // Set runner to isMoving when a movement is triggered
+            runner.isMoving = true;
+            // Send a specific blink message for the target base
+            // Determine target ESP32 based on the target base
+            let targetESP;
+            switch (runner.target) {
+              case 'first':
+                targetESP = 1;
+                break;
+              case 'second':
+                targetESP = 2;
+                break;
+              case 'third':
+                targetESP = 3;
+                break;
+              case 'home':
+                targetESP = 4;
+                break;
+              default:
+                targetESP = 1;
             }
-
-            // Record an out and handle inning transitions
-            recordOut() {
-                this.outs++;
-                if (this.outs >= 3) {
-                    this.outs = 0;
-                    this.nextInning();
-                }
-            }
-
-            // Clear all runners on base
-            clearBases() {
-                this.runners = [];
-                for (const b in this.base_states) {
-                    this.set_base_default(b);
-                }
-            }
-
-            // Advance to the next inning
-            nextInning() {
-                if (this.topOfInning) {
-                    this.topOfInning = false;
-                    this.clearBases();
-                } else {
-                    this.inning++;
-                    this.topOfInning = true;
-                    this.clearBases();
-                }
-            }
-
-            // Score a run based on the inning
-            scoreRun() {
-                if (this.topOfInning) {
-                    this.awayScore++;
-                } else {
-                    this.homeScore++;
-                }
-            }
-
-            // Reset the game scores and states
-            resetGame() {
-                this.homeScore = 0;
-                this.awayScore = 0;
-                this.outs = 0;
-                this.inning = 1;
-                this.topOfInning = true;
-            }
-
-            // Get the next base in sequence
-            get_next_base(current_base) {
-                switch (current_base) {
-                    case "home":
-                        return "first";
-                    case "first":
-                        return "second";
-                    case "second":
-                        return "third";
-                    case "third":
-                        return "home";
-                    default:
-                        return "home";
-                }
-            }
-
-            // Set base to default state
-            set_base_default(base_name) {
-                this.base_states[base_name] = this.OFF;
-                this.base_colors[base_name] = "white";
-                this.dynamic_flash_ms[base_name] = this.DEFAULT_FLASH_MS;
-            }
-
-            // Set base to flashing state
-            set_base_flashing(base_name) {
-                this.base_states[base_name] = this.FLASHING;
-                // Initialize last_toggle_time if not already set
-                if (!this.last_toggle_time[base_name]) {
-                    this.last_toggle_time[base_name] = performance.now();
-                }
-                // Start with green when flashing begins
-                if (this.base_colors[base_name] !== "green" && this.base_colors[base_name] !== "white") {
-                    this.base_colors[base_name] = "green";
-                }
-            }
-
-            // Set base to red (occupied) state
-            set_base_red(base_name) {
-                this.base_states[base_name] = this.RED;
-                this.base_colors[base_name] = "red";
-            }
-
-            // Remove a runner from a base
-            remove_runner_from_base(runner) {
-                const index = this.runners.indexOf(runner);
-                if (index > -1) {
-                    this.runners.splice(index, 1);
-                }
-            }
-
-            // Add a runner to a specified base
-            add_runner(base_name) {
-                // Prevent adding multiple runners to the same base
-                if (this.runners.some(r => r.base === base_name && !r.isOut)) return;
-                const pos = this.get_runner_position(base_name);
-                const target = this.get_next_base(base_name);
-                this.runners.push(new Runner([...pos], base_name, target));
-                this.set_base_flashing(base_name); // Start flashing when a runner is added
-            }
-
-            // Calculate position for runner on the field, accounting for multiple runners
-            get_runner_position(base_name) {
-                const base_pos = this.base_coords[base_name];
-                const current_runners = this.runners.filter(r => r.base === base_name && !r.isOut);
-                const num_runners = current_runners.length;
-                const BASE_RADIUS = canvasWidth * 0.03;
-
-                // Adjust offsets to be dynamic based on how many runners there are on the same base
-                let x_offset = 0;
-                let y_offset = 0;
-
-                if (num_runners === 0) {
-                    return base_pos; // If no other runners just use base pos
-                } else {
-                    // Calculate offset for each position
-                    switch (num_runners) {
-                        case 1:
-                            x_offset = BASE_RADIUS * 0.75;
-                            y_offset = BASE_RADIUS * 0.75;
-                            break;
-                        case 2:
-                            x_offset = BASE_RADIUS * -0.75;
-                            y_offset = BASE_RADIUS * 0.75;
-                            break;
-                        case 3:
-                            x_offset = BASE_RADIUS * 0;
-                            y_offset = BASE_RADIUS * -0.75;
-                            break;
-                        default:
-                            x_offset = 0;
-                            y_offset = 0;
-                    }
-                }
-                return [base_pos[0] + x_offset, base_pos[1] + y_offset]
-            }
-
-            // Reset all runners and base states
-            reset_all() {
-                this.runners = [];
-                for (const b in this.base_states) {
-                    this.set_base_default(b);
-                }
-                this.resetGame();
-            }
-
-            // Update flashing states based on elapsed time and dynamic intervals
-            update_flashing() {
-                const now = performance.now();
-                for (const base_name in this.base_states) {
-                    const state = this.base_states[base_name];
-                    if (state === this.FLASHING) {
-                        const elapsed = now - this.last_toggle_time[base_name];
-                        const interval = this.dynamic_flash_ms[base_name];
-                        if (elapsed >= interval) {
-                            // Toggle between green and white
-                            this.base_colors[base_name] = this.base_colors[base_name] === "green" ? "white" : "green";
-                            this.last_toggle_time[base_name] = now;
-                        }
-                    }
-                }
-            }
-
-            // Move all runners and handle base transitions
-            move_all_runners() {
-                if (!this.runners.length) {
-                    return null;
-                }
-
-                const transitions = this.runners
-                    .filter(runner => !runner.isOut)
-                    .map(runner => {
-                        const start = [...runner.pos];
-                        const end = this.base_coords[runner.target];
-                        // Set runner to isMoving when a movement is triggered
-                        runner.isMoving = true;
-                        // Send a specific blink message for the target base
-                        // Determine target ESP32 based on the target base
-                        let targetESP;
-                        switch (runner.target) {
-                            case 'first':
-                                targetESP = 1;
-                                break;
-                            case 'second':
-                                targetESP = 2;
-                                break;
-                            case 'third':
-                                targetESP = 3;
-                                break;
-                            case 'home':
-                                targetESP = 4;
-                                break;
-                            default:
-                                targetESP = 1;
-                        }
-                        sendWebSocketMessage(`BLINK_BASE_${runner.target.toUpperCase()}`, targetESP);
-                        return {
-                            runner,
-                            start,
-                            end
-                        };
-                    });
-
-                // Generator function to handle animation steps
-                return (function* (logic, transitions) {
-                    let allRunnersFinished = false;
-                    while (!allRunnersFinished) {
-                        allRunnersFinished = true;
-                        for (const transition of transitions) {
-                            const runner = transition.runner;
-                            if (runner.isOut) continue;
-                            if (runner.current_fraction < 1) {
-                                allRunnersFinished = false;
-                                const [sx, sy] = transition.start;
-                                const [ex, ey] = transition.end;
-                                runner.current_fraction += runner.speed;
-
-                                // Clamp fraction to 1
-                                const fraction = Math.min(runner.current_fraction, 1);
-
-                                // Update runner's position
-                                runner.pos = [
-                                    sx + (ex - sx) * fraction,
-                                    sy + (ey - sy) * fraction,
-                                ];
-
-                                // Calculate dynamic flash interval based on proximity
-                                const distance = Math.hypot(ex - sx, ey - sy);
-                                const remaining_distance = distance * (1 - fraction);
-                                const dynamicInterval = this.MIN_FLASH_MS + (this.DEFAULT_FLASH_MS - this.MIN_FLASH_MS) * (remaining_distance / distance);
-                                this.dynamic_flash_ms[transition.runner.target] = dynamicInterval;
-
-                                // Ensure the base is set to flashing
-                                this.set_base_flashing(transition.runner.target);
-                            }
-                        }
-                        yield;
-                    }
-
-                    // After all runners have finished moving
-                    for (const transition of transitions) {
-                        const runner = transition.runner;
-                        if (runner.isOut) continue;
-
-                        // Store the previous base before updating the runner's base
-                        const previousBase = runner.base;
-
-                        // Update runner's base to the target
-                        runner.base = runner.target;
-
-                        // If runner reaches home, score a run
-                        if (runner.base === "home") {
-                            this.scoreRun();
-                            this.remove_runner_from_base(runner);
-                        } else {
-                            // Set the new base to red (occupied)
-                            this.set_base_red(runner.base);
-                        }
-
-                        // Check if the previous base has no other runners and reset
-                        const otherRunnersOnPreviousBase = this.runners.some(r => r !== runner && r.base === previousBase && !r.isOut);
-                        if (!otherRunnersOnPreviousBase) {
-                            this.set_base_default(previousBase);
-                        }
-
-                        // Update the runner's next target base
-                        runner.target = this.get_next_base(runner.base);
-                        runner.current_fraction = 0;
-                        // Set to is moving to false now that movement is complete
-                        runner.isMoving = false;
-                    }
-                    // Reset the colors for bases that are no longer flashing or where a runner was tagged out
-                    for (const base_name in logic.base_states) {
-                        if (this.base_states[base_name] === this.FLASHING && !transitions.some(trans => trans.runner.target === base_name && !trans.runner.isOut)) {
-                            const onBase = this.runners.some(r => r.base === base_name && !r.isOut);
-                            if (!onBase)
-                                this.set_base_default(base_name);
-                        }
-                        const isOccupied = this.runners.some(r => r.base == base_name && !r.isOut);
-                        if (!isOccupied && this.base_states[base_name] === this.RED) {
-                            this.set_base_default(base_name);
-                        }
-                    }
-
-                }).bind(this)(this, transitions);
-            }
-        }
-
-        // Initialize Canvas and Context
-        const canvas = document.getElementById('baseballCanvas');
-        const ctx = canvas.getContext('2d');
-
-        let canvasWidth = 500;
-        let canvasHeight = 500;
-
-        // Define Base Coordinates
-        const base_coords = {
-            "home": [canvasWidth / 2, canvasHeight * 0.8],
-            "first": [canvasWidth * 0.7, canvasHeight * 0.6],
-            "second": [canvasWidth / 2, canvasHeight * 0.4],
-            "third": [canvasWidth * 0.3, canvasHeight * 0.6]
-        };
-
-        // Initialize Game Logic
-        const logic = new GameLogic(base_coords);
-        let animation_gen = null;
-
-        // Responsive Canvas Setup
-        function resizeCanvas() {
-            // Get the device's pixel ratio
-            const dpr = window.devicePixelRatio || 1;
-            // Calculate the desired width and height based on the container's width
-            const container = document.getElementById('game-container');
-            const computedStyle = getComputedStyle(container);
-            const width = parseInt(computedStyle.width) - 20; // Subtract padding
-            const height = width; // Keep canvas square
-
-            // Set the canvas CSS size
-            canvas.style.width = `${width}px`;
-            canvas.style.height = `${height}px`;
-
-            // Set the canvas's internal size to match the CSS size multiplied by the device pixel ratio
-            canvas.width = width * dpr;
-            canvas.height = height * dpr;
-
-            // Update canvasWidth and canvasHeight for game logic
-            canvasWidth = width * dpr;
-            canvasHeight = height * dpr;
-
-            // Update base coordinates based on new canvas size
-            logic.base_coords = {
-                "home": [canvasWidth / 2, canvasHeight * 0.8],
-                "first": [canvasWidth * 0.7, canvasHeight * 0.6],
-                "second": [canvasWidth / 2, canvasHeight * 0.4],
-                "third": [canvasWidth * 0.3, canvasHeight * 0.6]
+            sendWebSocketMessage(`BLINK_BASE_${runner.target.toUpperCase()}`, targetESP);
+            return {
+              runner,
+              start,
+              end
             };
-            // Reset the game to update base positions
-            logic.reset_all();
-            draw_field();
-            draw_runners();
-            draw_instructions();
-        }
+          });
 
-        // Initialize the canvas size
-        resizeCanvas();
+        // Generator function to handle animation steps
+        return (function* (logic, transitions) {
+          let allRunnersFinished = false;
+          while (!allRunnersFinished) {
+            allRunnersFinished = true;
+            for (const transition of transitions) {
+              const runner = transition.runner;
+              if (runner.isOut) continue;
+              if (runner.current_fraction < 1) {
+                allRunnersFinished = false;
+                const [sx, sy] = transition.start;
+                const [ex, ey] = transition.end;
+                runner.current_fraction += runner.speed;
 
-        // Adjust canvas size on window resize
-        window.addEventListener('resize', resizeCanvas);
+                // Clamp fraction to 1
+                const fraction = Math.min(runner.current_fraction, 1);
 
-        // ESP32 IP Addresses and Port
-const esp32IPs = [
-  '192.168.1.129', // ESP32-1 (First Base)
-  '192.168.1.146', // ESP32-2 (Second Base)
-  '192.168.1.116', // ESP32-3 (Third Base)
-  '192.168.1.132', // ESP32-4 (Home Base)
-];
-const esp32Port = 81; // WebSocket Port
+                // Update runner's position
+                runner.pos = [
+                  sx + (ex - sx) * fraction,
+                  sy + (ey - sy) * fraction,
+                ];
 
-// WebSocket connections
-let sockets = [null, null, null, null];
+                // Calculate dynamic flash interval based on proximity
+                const distance = Math.hypot(ex - sx, ey - sy);
+                const remaining_distance = distance * (1 - fraction);
+                const dynamicInterval = this.MIN_FLASH_MS + (this.DEFAULT_FLASH_MS - this.MIN_FLASH_MS) * (remaining_distance / distance);
+                this.dynamic_flash_ms[transition.runner.target] = dynamicInterval;
 
-// Initialize WebSocket for a specific ESP32
-function initWebSocket(index) {
-  const ip = esp32IPs[index];
-  const url = `ws://${ip}:${esp32Port}/`;
+                // Ensure the base is set to flashing
+                this.set_base_flashing(transition.runner.target);
+              }
+            }
+            yield;
+          }
 
-  const socket = new WebSocket(url);
+          // After all runners have finished moving
+          for (const transition of transitions) {
+            const runner = transition.runner;
+            if (runner.isOut) continue;
 
-  socket.onopen = () => {
-    console.log(`WebSocket${index + 1} connection established with ESP32-${index + 1}`);
-    document.getElementById(`status-display-${index + 1}`).textContent = `ESP32-${index + 1} Status: Connected`;
-  };
+            // Store the previous base before updating the runner's base
+            const previousBase = runner.base;
 
-  socket.onmessage = (event) => {
-    console.log(`Message from ESP32-${index + 1}:`, event.data);
-    handleESP32Message(event.data, index + 1);
-  };
+            // Update runner's base to the target
+            runner.base = runner.target;
 
-  socket.onclose = (event) => {
-    console.log(`WebSocket${index + 1} connection closed. Reconnecting in 3 seconds...`, event.reason);
-    document.getElementById(`status-display-${index + 1}`).textContent = `ESP32-${index + 1} Status: Disconnected`;
-    setTimeout(() => initWebSocket(index), 3000); // Attempt to reconnect
-  };
-
-  socket.onerror = (error) => {
-    console.error(`WebSocket${index + 1} error:`, error);
-    socket.close(); // Close and trigger reconnect
-  };
-
-  sockets[index] = socket; // Save the socket
-}
-
-// Initialize all WebSocket connections
-function initWebSockets() {
-  for (let i = 0; i < esp32IPs.length; i++) {
-    initWebSocket(i);
-  }
-}
-
-// Send a message to a specific ESP32
-function sendWebSocketMessage(message, target = 1) {
-  const index = target - 1; // Adjust for 0-based array indexing
-  const socket = sockets[index];
-  if (socket && socket.readyState === WebSocket.OPEN) {
-    socket.send(message);
-    console.log(`Sent to ESP32-${target}: ${message}`);
-  } else {
-    console.log(`WebSocket${target} is not open. Unable to send message: ${message}`);
-  }
-}
-
-// Handle ESP32 messages
-function handleESP32Message(message, sourceESP) {
-  // Implement your logic based on the message and sourceESP
-  if (message === 'RUNNER_ADDED') {
-    console.log(`Runner added successfully on ESP32-${sourceESP}`);
-  } else if (message.startsWith('ERROR')) {
-    console.error(`Error from ESP32-${sourceESP}: ${message}`);
-  }
-  // Add more conditions as needed
-}
-
-// Initialize WebSockets when the window loads
-window.onload = initWebSockets;
-
-
-        /**
-         * Sends a message to the specified ESP32.
-         * @param {string} message - The message to send.
-         * @param {number} target - The target ESP32 (1, 2, 3, or 4).
-         */
-        function sendWebSocketMessage(message, target = 1) {
-            if (target === 1 && socket1 && socket1.readyState === WebSocket.OPEN) {
-                socket1.send(message);
-                console.log(`Sent to ESP32-1 (First Base): ${message}`);
-            } else if (target === 2 && socket2 && socket2.readyState === WebSocket.OPEN) {
-                socket2.send(message);
-                console.log(`Sent to ESP32-2 (Second Base): ${message}`);
-            } else if (target === 3 && socket3 && socket3.readyState === WebSocket.OPEN) {
-                socket3.send(message);
-                console.log(`Sent to ESP32-3 (Third Base): ${message}`);
-            } else if (target === 4 && socket4 && socket4.readyState === WebSocket.OPEN) {
-                socket4.send(message);
-                console.log(`Sent to ESP32-4 (Home Base): ${message}`);
+            // If runner reaches home, score a run
+            if (runner.base === "home") {
+              this.scoreRun();
+              this.remove_runner_from_base(runner);
             } else {
-                console.log(`WebSocket${target} is not open. Unable to send message: ${message}`);
+              // Set the new base to red (occupied)
+              this.set_base_red(runner.base);
             }
+
+            // Check if the previous base has no other runners and reset
+            const otherRunnersOnPreviousBase = this.runners.some(r => r !== runner && r.base === previousBase && !r.isOut);
+            if (!otherRunnersOnPreviousBase) {
+              this.set_base_default(previousBase);
+            }
+
+            // Update the runner's next target base
+            runner.target = this.get_next_base(runner.base);
+            runner.current_fraction = 0;
+            // Set to is moving to false now that movement is complete
+            runner.isMoving = false;
+          }
+          // Reset the colors for bases that are no longer flashing or where a runner was tagged out
+          for (const base_name in logic.base_states) {
+            if (this.base_states[base_name] === this.FLASHING && !transitions.some(trans => trans.runner.target === base_name && !trans.runner.isOut)) {
+              const onBase = this.runners.some(r => r.base === base_name && !r.isOut);
+              if (!onBase)
+                this.set_base_default(base_name);
+            }
+            const isOccupied = this.runners.some(r => r.base == base_name && !r.isOut);
+            if (!isOccupied && this.base_states[base_name] === this.RED) {
+              this.set_base_default(base_name);
+            }
+          }
+
+        }).bind(this)(this, transitions);
+      }
+    }
+
+    // Initialize Canvas and Context
+    const canvas = document.getElementById('baseballCanvas');
+    const ctx = canvas.getContext('2d');
+
+    let canvasWidth = 500;
+    let canvasHeight = 500;
+
+    // Define Base Coordinates
+    const base_coords = {
+      "home": [canvasWidth / 2, canvasHeight * 0.8],
+      "first": [canvasWidth * 0.7, canvasHeight * 0.6],
+      "second": [canvasWidth / 2, canvasHeight * 0.4],
+      "third": [canvasWidth * 0.3, canvasHeight * 0.6]
+    };
+
+    // Initialize Game Logic
+    const logic = new GameLogic(base_coords);
+    let animation_gen = null;
+
+    // Responsive Canvas Setup
+    function resizeCanvas() {
+      // Get the device's pixel ratio
+      const dpr = window.devicePixelRatio || 1;
+      // Calculate the desired width and height based on the container's width
+      const container = document.getElementById('game-container');
+      const computedStyle = getComputedStyle(container);
+      const width = parseInt(computedStyle.width) - 20; // Subtract padding
+      const height = width; // Keep canvas square
+
+      // Set the canvas CSS size
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      // Set the canvas's internal size to match the CSS size multiplied by the device pixel ratio
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+
+      // Update canvasWidth and canvasHeight for game logic
+      canvasWidth = width * dpr;
+      canvasHeight = height * dpr;
+
+      // Update base coordinates based on new canvas size
+      logic.base_coords = {
+        "home": [canvasWidth / 2, canvasHeight * 0.8],
+        "first": [canvasWidth * 0.7, canvasHeight * 0.6],
+        "second": [canvasWidth / 2, canvasHeight * 0.4],
+        "third": [canvasWidth * 0.3, canvasHeight * 0.6]
+      };
+      // Reset the game to update base positions
+      logic.reset_all();
+      draw_field();
+      draw_runners();
+      draw_instructions();
+    }
+
+    // Initialize the canvas size
+    resizeCanvas();
+
+    // Adjust canvas size on window resize
+    window.addEventListener('resize', resizeCanvas);
+
+    // ESP32 IP Addresses and Port
+    const esp32IPs = [
+      '192.168.1.129', // ESP32-1 (First Base)
+      '192.168.1.146', // ESP32-2 (Second Base)
+      '192.168.1.116', // ESP32-3 (Third Base)
+      '192.168.1.132', // ESP32-4 (Home Base)
+    ];
+    const esp32Port = 81; // WebSocket Port
+
+    // WebSocket connections
+    let sockets = [null, null, null, null];
+
+    // Initialize WebSocket for a specific ESP32
+    function initWebSocket(index) {
+      const ip = esp32IPs[index];
+      const url = `ws://${ip}:${esp32Port}/`;
+
+      const socket = new WebSocket(url);
+
+      socket.onopen = () => {
+        console.log(`WebSocket${index + 1} connection established with ESP32-${index + 1}`);
+        document.getElementById(`status-display-${index + 1}`).textContent = `ESP32-${index + 1} Status: Connected`;
+      };
+
+      socket.onmessage = (event) => {
+        console.log(`Message from ESP32-${index + 1}:`, event.data);
+        handleESP32Message(event.data, index + 1);
+      };
+
+      socket.onclose = (event) => {
+        console.log(`WebSocket${index + 1} connection closed. Reconnecting in 3 seconds...`, event.reason);
+        document.getElementById(`status-display-${index + 1}`).textContent = `ESP32-${index + 1} Status: Disconnected`;
+        setTimeout(() => initWebSocket(index), 3000); // Attempt to reconnect
+      };
+
+      socket.onerror = (error) => {
+        console.error(`WebSocket${index + 1} error:`, error);
+        socket.close(); // Close and trigger reconnect
+      };
+
+      sockets[index] = socket; // Save the socket
+    }
+
+    // Initialize all WebSocket connections
+    function initWebSockets() {
+      for (let i = 0; i < esp32IPs.length; i++) {
+        initWebSocket(i);
+      }
+    }
+
+    // Send a message to a specific ESP32
+    function sendWebSocketMessage(message, target = 1) {
+      const index = target - 1; // Adjust for 0-based array indexing
+      const socket = sockets[index];
+      if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.send(message);
+        console.log(`Sent to ESP32-${target}: ${message}`);
+      } else {
+        console.log(`WebSocket${target} is not open. Unable to send message: ${message}`);
+      }
+    }
+
+    // Handle ESP32 messages
+    function handleESP32Message(message, sourceESP) {
+      // Implement your logic based on the message and sourceESP
+      if (message === 'RUNNER_ADDED') {
+        console.log(`Runner added successfully on ESP32-${sourceESP}`);
+      } else if (message.startsWith('ERROR')) {
+        console.error(`Error from ESP32-${sourceESP}: ${message}`);
+      }
+      // Add more conditions as needed
+    }
+
+    // Initialize WebSockets when the window loads
+    window.onload = initWebSockets;
+
+    // Reset the game scenario
+    function resetScenario() {
+      animation_gen = null;
+      logic.reset_all();
+      // Reset all ESP32 devices
+      sendWebSocketMessage('RESET', 1); // Reset first ESP32 (First Base)
+      sendWebSocketMessage('RESET', 2); // Reset second ESP32 (Second Base)
+      sendWebSocketMessage('RESET', 3); // Reset third ESP32 (Third Base)
+      sendWebSocketMessage('RESET', 4); // Reset fourth ESP32 (Home Base)
+    }
+
+    // Move all runners
+    function moveRunners() {
+      const anim_steps = logic.move_all_runners();
+      if (anim_steps) {
+        animation_gen = anim_steps;
+      }
+    }
+
+    // Add a runner to a specific base
+    function addRunner(base_name) {
+      logic.add_runner(base_name);
+
+      // Determine the target ESP32 based on the base_name
+      let targetESP;
+      switch (base_name) {
+        case 'first':
+          targetESP = 1;
+          break;
+        case 'second':
+          targetESP = 2;
+          break;
+        case 'third':
+          targetESP = 3;
+          break;
+        case 'home':
+          targetESP = 4;
+          break;
+        default:
+          targetESP = 1; // Default to first ESP32
+      }
+
+      sendWebSocketMessage(`ADD_RUNNER_${base_name.toUpperCase()}`, targetESP);
+    }
+
+    // Tag a runner as out
+    function tagRunnerOut(runner, base_name) {
+      runner.isOut = true;
+
+      // Determine the target ESP32 based on the base_name
+      let targetESP;
+      switch (base_name) {
+        case 'first':
+          targetESP = 1;
+          break;
+        case 'second':
+          targetESP = 2;
+          break;
+        case 'third':
+          targetESP = 3;
+          break;
+        case 'home':
+          targetESP = 4;
+          break;
+        default:
+          targetESP = 1; // Default to first ESP32
+      }
+
+      logic.recordOut();
+      sendWebSocketMessage('OUT', targetESP); // Inform the specific ESP32 to record an out
+    }
+
+    // Handle Canvas Interactions for Tagging Runners or Bases
+    function handleCanvasInteraction(event) {
+      event.preventDefault(); // Prevent default touch behaviors like scrolling
+
+      let pointerX, pointerY;
+
+      if (event.type.startsWith('touch')) {
+        // Handle touch events
+        if (event.touches.length > 0) {
+          pointerX = event.touches[0].clientX;
+          pointerY = event.touches[0].clientY;
+        } else {
+          return; // No touch points available
         }
+      } else {
+        // Handle pointer or mouse events
+        pointerX = event.clientX;
+        pointerY = event.clientY;
+      }
 
-        /**
-         * Handles messages received from ESP32 devices.
-         * @param {string} message - The received message.
-         * @param {number} sourceESP - The source ESP32 (1, 2, 3, or 4).
-         */
-        function handleESP32Message(message, sourceESP) {
-            // Implement your logic based on the message and sourceESP
-            if (message === 'RUNNER_ADDED') {
-                console.log(`Runner added successfully on ESP32-${sourceESP}`);
-            } else if (message.startsWith('ERROR')) {
-                console.error(`Error from ESP32-${sourceESP}: ${message}`);
-            }
-            // Add more conditions as needed
+      const canvasRect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / canvasRect.width;
+      const scaleY = canvas.height / canvasRect.height;
+
+      const clickX = (pointerX - canvasRect.left) * scaleX;
+      const clickY = (pointerY - canvasRect.top) * scaleY;
+
+      // Check if a runner is clicked
+      for (const runner of logic.runners) {
+        if (!runner.isOut) {
+          const [runnerX, runnerY] = runner.pos;
+          const runnerRadius = canvasWidth * 0.02;
+          const runnerDistance = Math.hypot(clickX - runnerX, clickY - runnerY);
+          if (runnerDistance < runnerRadius) {
+            tagRunnerOut(runner, runner.base); // Pass base_name to determine target ESP32
+            return;
+          }
         }
+      }
 
-        // Reset the game scenario
-        function resetScenario() {
-            animation_gen = null;
-            logic.reset_all();
-            // Reset all ESP32 devices
-            sendWebSocketMessage('RESET', 1); // Reset first ESP32 (First Base)
-            sendWebSocketMessage('RESET', 2); // Reset second ESP32 (Second Base)
-            sendWebSocketMessage('RESET', 3); // Reset third ESP32 (Third Base)
-            sendWebSocketMessage('RESET', 4); // Reset fourth ESP32 (Home Base)
+      // Check for interactions on bases (Force Out Logic)
+      for (const baseName in logic.base_coords) {
+        const [bx, by] = logic.base_coords[baseName];
+        const baseDistance = Math.hypot(clickX - bx, clickY - by);
+        const baseRadius = canvasWidth * 0.03; // Dynamic base size
+        // Check if a base is flashing and the click is within its bounds
+        if (baseDistance < baseRadius * 1.5) { // Increased sensitivity
+
+          // If a runner is targeted and present on the flashing base, tag that runner out
+          let runnerTagged = false;
+          for (const runner of logic.runners) {
+            if (runner.target === baseName && !runner.isOut && runner.current_fraction > 0) {
+              tagRunnerOut(runner, baseName);
+              runnerTagged = true;
+              break;
+            }
+          }
+          // If no runner is targeted, add a runner to this base if no runner exists
+          if (!runnerTagged) {
+            const runnerOnBase = logic.runners.some(r => r.base === baseName && !r.isOut);
+            if (!runnerOnBase && logic.base_states[baseName] !== logic.RED) { // If there's not a runner on base AND the base is not occupied then add a runner
+              addRunner(baseName); // This function now sends the correct message to the respective ESP32
+            }
+          }
+          return; // Stop processing after interaction
         }
+      }
 
-        // Move all runners
-        function moveRunners() {
-            const anim_steps = logic.move_all_runners();
-            if (anim_steps) {
-                animation_gen = anim_steps;
-                // Optionally, send move commands to specific ESP32s if needed
-                // Example:
-                // sendWebSocketMessage('MOVE_ALL', 1);
-                // sendWebSocketMessage('MOVE_ALL', 2);
-                // sendWebSocketMessage('MOVE_ALL', 3);
-                // sendWebSocketMessage('MOVE_ALL', 4);
-            }
+      // Check for interactions on pitcher's mound
+      const mound_x = (logic.base_coords.home[0] + logic.base_coords.second[0]) / 2;
+      const mound_y = (logic.base_coords.home[1] + logic.base_coords.second[1]) / 2;
+      const mound_radius = canvasWidth * 0.02;
+      const moundDistance = Math.hypot(clickX - mound_x, clickY - mound_y);
+
+      if (moundDistance < mound_radius * 5) {
+        moveRunners();
+      }
+    }
+
+    // Add event listeners for Canvas Interactions using Pointer and Touch Events
+    canvas.addEventListener('pointerdown', handleCanvasInteraction);
+    canvas.addEventListener('touchstart', handleCanvasInteraction, { passive: false });
+
+    // Update the GUI continuously
+    function update_gui() {
+      // Update flashing bases
+      logic.update_flashing();
+
+      // Update Score Display
+      const scoreDisplay = document.getElementById('score-display');
+      scoreDisplay.textContent = `Home: ${logic.homeScore}, Away: ${logic.awayScore}`;
+
+      // Update Inning Display
+      const inningDisplay = document.getElementById('inning-display');
+      inningDisplay.textContent = `Inning: ${logic.inning} ${logic.topOfInning ? "Top" : "Bottom"}`;
+
+      // Update Outs Display
+      const outDisplay = document.getElementById('out-display');
+      outDisplay.innerHTML = `Outs: ${Array(logic.outs).fill('<span class="out-icon"></span>').join('')}`;
+
+      // Handle Runner Animations
+      if (animation_gen !== null) {
+        const nextResult = animation_gen.next();
+        if (!nextResult.done) {
+          draw_field();
+          draw_runners();
+          draw_instructions();
+        } else {
+          animation_gen = null;
         }
+      } else {
+        draw_field();
+        draw_runners();
+        draw_instructions();
+      }
+      // Request the next frame
+      requestAnimationFrame(update_gui);
+    }
 
-        // Add a runner to a specific base
-        function addRunner(base_name) {
-            logic.add_runner(base_name);
+    // Start the GUI Update Loop
+    update_gui();
 
-            // Determine the target ESP32 based on the base_name
-            let targetESP;
-            switch (base_name) {
-                case 'first':
-                    targetESP = 1;
-                    break;
-                case 'second':
-                    targetESP = 2;
-                    break;
-                case 'third':
-                    targetESP = 3;
-                    break;
-                case 'home':
-                    targetESP = 4;
-                    break;
-                default:
-                    targetESP = 1; // Default to first ESP32
-            }
+    // Draw the Baseball Field
+    function draw_field() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            sendWebSocketMessage(`ADD_RUNNER_${base_name.toUpperCase()}`, targetESP);
+      const bc = logic.base_coords;
+      const home = bc["home"];
+      const first = bc["first"];
+      const second = bc["second"];
+      const third = bc["third"];
+
+      // Draw the infield diamond (Brown Polygon)
+      ctx.fillStyle = "brown";
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(home[0], home[1]);
+      ctx.lineTo(first[0], first[1]);
+      ctx.lineTo(second[0], second[1]);
+      ctx.lineTo(third[0], third[1]);
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+
+      // Function to create extended lines
+      function extended_line(x1, y1, x2, y2, extra_length = 200) {
+        const dx = x2 - x1;
+        const dy = y2 - y1;
+        const length = Math.hypot(dx, dy);
+        if (length === 0) {
+          return [x1, y1];
         }
+        const ratio = (length + extra_length) / length;
+        return [x1 + dx * ratio, y1 + dy * ratio];
+      }
 
-        // Tag a runner as out
-        function tagRunnerOut(runner, base_name) {
-            runner.isOut = true;
+      // Foul lines (White lines extended from home)
+      const home_first_ext = extended_line(home[0], home[1], first[0], first[1], canvasWidth * 0.4);
+      const home_third_ext = extended_line(home[0], home[1], third[0], third[1], canvasWidth * 0.4);
+      ctx.strokeStyle = "white";
+      ctx.lineWidth = 2;
+      // Draw first foul line
+      ctx.beginPath();
+      ctx.moveTo(home[0], home[1]);
+      ctx.lineTo(home_first_ext[0], home_first_ext[1]);
+      ctx.stroke();
 
-            // Determine the target ESP32 based on the base_name
-            let targetESP;
-            switch (base_name) {
-                case 'first':
-                    targetESP = 1;
-                    break;
-                case 'second':
-                    targetESP = 2;
-                    break;
-                case 'third':
-                    targetESP = 3;
-                    break;
-                case 'home':
-                    targetESP = 4;
-                    break;
-                default:
-                    targetESP = 1; // Default to first ESP32
-            }
+      // Draw third foul line
+      ctx.beginPath();
+      ctx.moveTo(home[0], home[1]);
+      ctx.lineTo(home_third_ext[0], home_third_ext[1]);
+      ctx.stroke();
 
-            logic.recordOut();
-            sendWebSocketMessage('OUT', targetESP); // Inform the specific ESP32 to record an out
+      // Inverted fence (Gray Arc)
+      const fence_center_x = canvasWidth / 2;
+      const fence_center_y = canvasHeight * 0.59; // Adjusted center Y
+      const fence_radius = canvasWidth * 0.36; // Adjusted radius
+      ctx.strokeStyle = "gray";
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(fence_center_x, fence_center_y, fence_radius, Math.PI, Math.PI * 2);
+      ctx.stroke();
+
+      // Pitcher's mound (Tan Circle)
+      const mx = (home[0] + second[0]) / 2;
+      const my = (home[1] + second[1]) / 2;
+      const mound_radius = canvasWidth * 0.02; // Adjusted mound radius
+      ctx.fillStyle = "tan";
+      ctx.strokeStyle = "black";
+      ctx.beginPath();
+      ctx.arc(mx, my, mound_radius, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.stroke();
+
+      // Draw bases (Colored Circles)
+      const BASE_RADIUS = canvasWidth * 0.03;
+      for (const base_name in bc) {
+        const [x, y] = bc[base_name];
+        const color = logic.base_colors[base_name];
+        ctx.fillStyle = color;
+        ctx.strokeStyle = "black";
+        ctx.beginPath();
+        ctx.arc(x, y, BASE_RADIUS, 0, 2 * Math.PI);
+        ctx.fill();
+        ctx.stroke();
+
+        // Label the base
+        ctx.fillStyle = "white";
+        ctx.font = `${canvasWidth * 0.015}px Arial`; // Dynamic font size
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle"; // Center vertically
+        ctx.fillText(base_name.toUpperCase(), x, y - BASE_RADIUS - 5);
+      }
+
+      // Draw "TRIPLE PLAY 1.0" text (Logo) at the top of the screen
+      ctx.save(); // Save the current context state
+
+      const text = "TRIPLE PLAY 1.0";
+      const centerX = canvasWidth / 2; // Center horizontally
+      const centerY = canvasHeight * 0.1; // Position text near the top of the screen
+      ctx.fillStyle = "white";
+      ctx.textAlign = "center"; // Center align the text
+      ctx.textBaseline = "middle"; // Center text vertically
+
+      ctx.font = `${canvasWidth * 0.06}px Arial`;
+
+      ctx.fillText(text, centerX, centerY);
+
+      ctx.restore(); // Restore the original context state
+    }
+
+    // Draw the runners on the field
+    function draw_runners() {
+      for (const r of logic.runners) {
+        if (!r.isOut) {
+          const [x, y] = r.pos;
+          ctx.fillStyle = "red";
+          ctx.strokeStyle = "black";
+          ctx.beginPath();
+          ctx.arc(x, y, canvasWidth * 0.02, 0, 2 * Math.PI); // Dynamic runner size
+          ctx.fill();
+          ctx.stroke();
         }
+      }
+    }
 
-        // Handle Canvas Interactions for Tagging Runners or Bases
-        function handleCanvasInteraction(event) {
-            event.preventDefault(); // Prevent default touch behaviors like scrolling
+    // Draw instructions on the canvas
+    function draw_instructions() {
+      ctx.save();
 
-            let pointerX, pointerY;
+      // Instruction box size, padding and margin values
+      const box_width = canvasWidth * 0.4; // Reduced width
+      const box_height = canvasHeight * 0.20; // Reduced height
+      const margin = canvasWidth * 0.02;
+      const padding = canvasWidth * 0.01;
+      const text_line_height = canvasHeight * 0.024; // Adjusted text line height
 
-            if (event.type.startsWith('touch')) {
-                // Handle touch events
-                if (event.touches.length > 0) {
-                    pointerX = event.touches[0].clientX;
-                    pointerY = event.touches[0].clientY;
-                } else {
-                    return; // No touch points available
-                }
-            } else {
-                // Handle pointer or mouse events
-                pointerX = event.clientX;
-                pointerY = event.clientY;
-            }
+      const box_x = margin; // Positioned at the far left
+      const box_y = canvasHeight * 0.75 + margin; // Position at the bottom
 
-            const canvasRect = canvas.getBoundingClientRect();
-            const scaleX = canvas.width / canvasRect.width;
-            const scaleY = canvas.height / canvasRect.height;
+      ctx.fillStyle = "rgba(0,0,0,0.7)";
+      ctx.fillRect(box_x, box_y, box_width, box_height);
 
-            const clickX = (pointerX - canvasRect.left) * scaleX;
-            const clickY = (pointerY - canvasRect.top) * scaleY;
+      ctx.fillStyle = "white";
+      ctx.font = `${canvasWidth * 0.018}px Arial`; // Increased font size slightly
+      ctx.textAlign = "left";
+      ctx.textBaseline = "top";
 
-            // Check if a runner is clicked
-            for (const runner of logic.runners) {
-                if (!runner.isOut) {
-                    const [runnerX, runnerY] = runner.pos;
-                    const runnerRadius = canvasWidth * 0.02;
-                    const runnerDistance = Math.hypot(clickX - runnerX, clickY - runnerY);
-                    if (runnerDistance < runnerRadius) {
-                        tagRunnerOut(runner, runner.base); // Pass base_name to determine target ESP32
-                        return;
-                    }
-                }
-            }
+      const instructions = [
+        "Instructions:",
+        "1. Add Runners using buttons.",
+        "2. Tap Pitcher's Mound or 'Move All'.",
+        "3. Tap Flashing Base or Runner to Tag Out.",
+        "4. Score, Inning, and Outs tracked.",
+        "5. Use 'Reset' to start over."
+      ];
 
-            // Check for interactions on bases (Force Out Logic)
-            for (const baseName in logic.base_coords) {
-                const [bx, by] = logic.base_coords[baseName];
-                const baseDistance = Math.hypot(clickX - bx, clickY - by);
-                const baseRadius = canvasWidth * 0.03; // Dynamic base size
-                // Check if a base is flashing and the click is within its bounds
-                if (baseDistance < baseRadius * 1.5) { // Increased sensitivity
+      instructions.forEach((line, index) => {
+        ctx.fillText(line, box_x + padding, box_y + padding + (text_line_height * index));
+      });
 
-                    // If a runner is targeted and present on the flashing base, tag that runner out
-                    let runnerTagged = false;
-                    for (const runner of logic.runners) {
-                        if (runner.target === baseName && !runner.isOut && runner.current_fraction > 0) {
-                            tagRunnerOut(runner, baseName);
-                            runnerTagged = true;
-                            break;
-                        }
-                    }
-                    // If no runner is targeted, add a runner to this base if no runner exists
-                    if (!runnerTagged) {
-                        const runnerOnBase = logic.runners.some(r => r.base === baseName && !r.isOut);
-                        if (!runnerOnBase && logic.base_states[baseName] !== logic.RED) { // If there's not a runner on base AND the base is not occupied then add a runner
-                            addRunner(baseName); // This function now sends the correct message to the respective ESP32
-                        }
-                    }
-                    return; // Stop processing after interaction
-                }
-            }
-
-            // Check for interactions on pitcher's mound
-            const mound_x = (logic.base_coords.home[0] + logic.base_coords.second[0]) / 2;
-            const mound_y = (logic.base_coords.home[1] + logic.base_coords.second[1]) / 2;
-            const mound_radius = canvasWidth * 0.02;
-            const moundDistance = Math.hypot(clickX - mound_x, clickY - mound_y);
-
-            if (moundDistance < mound_radius * 5) {
-                moveRunners();
-            }
-        }
-
-        // Add event listeners for Canvas Interactions using Pointer and Touch Events
-        canvas.addEventListener('pointerdown', handleCanvasInteraction);
-        canvas.addEventListener('touchstart', handleCanvasInteraction, { passive: false });
-
-        // Update the GUI continuously
-        function update_gui() {
-            // Update flashing bases
-            logic.update_flashing();
-
-            // Update Score Display
-            const scoreDisplay = document.getElementById('score-display');
-            scoreDisplay.textContent = `Home: ${logic.homeScore}, Away: ${logic.awayScore}`;
-
-            // Update Inning Display
-            const inningDisplay = document.getElementById('inning-display');
-            inningDisplay.textContent = `Inning: ${logic.inning} ${logic.topOfInning ? "Top" : "Bottom"}`;
-
-            // Update Outs Display
-            const outDisplay = document.getElementById('out-display');
-            outDisplay.innerHTML = `Outs: ${Array(logic.outs).fill('<span class="out-icon"></span>').join('')}`;
-
-            // Handle Runner Animations
-            if (animation_gen !== null) {
-                const nextResult = animation_gen.next();
-                if (!nextResult.done) {
-                    draw_field();
-                    draw_runners();
-                    draw_instructions();
-                } else {
-                    animation_gen = null;
-                }
-            } else {
-                draw_field();
-                draw_runners();
-                draw_instructions();
-            }
-            // Request the next frame
-            requestAnimationFrame(update_gui);
-        }
-
-        // Start the GUI Update Loop
-        update_gui();
-
-        // Draw the Baseball Field
-        function draw_field() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            const bc = logic.base_coords;
-            const home = bc["home"];
-            const first = bc["first"];
-            const second = bc["second"];
-            const third = bc["third"];
-
-            // Draw the infield diamond (Brown Polygon)
-            ctx.fillStyle = "brown";
-            ctx.strokeStyle = "white";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.moveTo(home[0], home[1]);
-            ctx.lineTo(first[0], first[1]);
-            ctx.lineTo(second[0], second[1]);
-            ctx.lineTo(third[0], third[1]);
-            ctx.closePath();
-            ctx.fill();
-            ctx.stroke();
-
-            // Function to create extended lines
-            function extended_line(x1, y1, x2, y2, extra_length = 200) {
-                const dx = x2 - x1;
-                const dy = y2 - y1;
-                const length = Math.hypot(dx, dy);
-                if (length === 0) {
-                    return [x1, y1];
-                }
-                const ratio = (length + extra_length) / length;
-                return [x1 + dx * ratio, y1 + dy * ratio];
-            }
-
-            // Foul lines (White lines extended from home)
-            const home_first_ext = extended_line(home[0], home[1], first[0], first[1], canvasWidth * 0.4);
-            const home_third_ext = extended_line(home[0], home[1], third[0], third[1], canvasWidth * 0.4);
-            ctx.strokeStyle = "white";
-            ctx.lineWidth = 2;
-
-            // Draw first foul line
-            ctx.beginPath();
-            ctx.moveTo(home[0], home[1]);
-            ctx.lineTo(home_first_ext[0], home_first_ext[1]);
-            ctx.stroke();
-
-            // Draw third foul line
-            ctx.beginPath();
-            ctx.moveTo(home[0], home[1]);
-            ctx.lineTo(home_third_ext[0], home_third_ext[1]);
-            ctx.stroke();
-
-            // Inverted fence (Gray Arc)
-            const fence_center_x = canvasWidth / 2;
-            const fence_center_y = canvasHeight * 0.59; // Adjusted center Y
-            const fence_radius = canvasWidth * 0.36; // Adjusted radius
-            ctx.strokeStyle = "gray";
-            ctx.lineWidth = 3;
-            ctx.beginPath();
-            ctx.arc(fence_center_x, fence_center_y, fence_radius, Math.PI, Math.PI * 2);
-            ctx.stroke();
-
-            // Pitcher's mound (Tan Circle)
-            const mx = (home[0] + second[0]) / 2;
-            const my = (home[1] + second[1]) / 2;
-            const mound_radius = canvasWidth * 0.02; // Adjusted mound radius
-            ctx.fillStyle = "tan";
-            ctx.strokeStyle = "black";
-            ctx.beginPath();
-            ctx.arc(mx, my, mound_radius, 0, 2 * Math.PI);
-            ctx.fill();
-            ctx.stroke();
-
-            // Draw bases (Colored Circles)
-            const BASE_RADIUS = canvasWidth * 0.03;
-            for (const base_name in bc) {
-                const [x, y] = bc[base_name];
-                const color = logic.base_colors[base_name];
-                ctx.fillStyle = color;
-                ctx.strokeStyle = "black";
-                ctx.beginPath();
-                ctx.arc(x, y, BASE_RADIUS, 0, 2 * Math.PI);
-                ctx.fill();
-                ctx.stroke();
-
-                // Label the base
-                ctx.fillStyle = "white";
-                ctx.font = `${canvasWidth * 0.015}px Arial`; // Dynamic font size
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle"; // Center vertically
-                ctx.fillText(base_name.toUpperCase(), x, y - BASE_RADIUS - 5);
-            }
-
-            // Draw "TRIPLE PLAY 1.0" text (Logo) at the top of the screen
-            ctx.save(); // Save the current context state
-
-            const text = "TRIPLE PLAY 1.0";
-            const centerX = canvasWidth / 2; // Center horizontally
-            const centerY = canvasHeight * 0.1; // Position text near the top of the screen
-            ctx.fillStyle = "white";
-            ctx.textAlign = "center"; // Center align the text
-            ctx.textBaseline = "middle"; // Center text vertically
-
-            ctx.font = `${canvasWidth * 0.06}px Arial`;
-
-            ctx.fillText(text, centerX, centerY);
-
-            ctx.restore(); // Restore the original context state
-        }
-
-        // Draw the runners on the field
-        function draw_runners() {
-            for (const r of logic.runners) {
-                if (!r.isOut) {
-                    const [x, y] = r.pos;
-                    ctx.fillStyle = "red";
-                    ctx.strokeStyle = "black";
-                    ctx.beginPath();
-                    ctx.arc(x, y, canvasWidth * 0.02, 0, 2 * Math.PI); // Dynamic runner size
-                    ctx.fill();
-                    ctx.stroke();
-                }
-            }
-        }
-
-        // Draw instructions on the canvas
-        function draw_instructions() {
-            ctx.save();
-
-            // Instruction box size, padding and margin values
-            const box_width = canvasWidth * 0.4; // Reduced width
-            const box_height = canvasHeight * 0.20; // Reduced height
-            const margin = canvasWidth * 0.02;
-            const padding = canvasWidth * 0.01;
-            const text_line_height = canvasHeight * 0.024; // Adjusted text line height
-
-            const box_x = margin; // Positioned at the far left
-            const box_y = canvasHeight * 0.75 + margin; // Position at the bottom
-
-            ctx.fillStyle = "rgba(0,0,0,0.7)";
-            ctx.fillRect(box_x, box_y, box_width, box_height);
-
-            ctx.fillStyle = "white";
-            ctx.font = `${canvasWidth * 0.018}px Arial`; // Increased font size slightly
-            ctx.textAlign = "left";
-            ctx.textBaseline = "top";
-
-            const instructions = [
-                "Instructions:",
-                "1. Add Runners using buttons.",
-                "2. Tap Pitcher's Mound or 'Move All'.",
-                "3. Tap Flashing Base or Runner to Tag Out.",
-                "4. Score, Inning, and Outs tracked.",
-                "5. Use 'Reset' to start over."
-            ];
-
-            instructions.forEach((line, index) => {
-                ctx.fillText(line, box_x + padding, box_y + padding + (text_line_height * index));
-            });
-
-            ctx.restore();
-        }
-    </script>
+      ctx.restore();
+    }
+  </script>
 </body>
 
 </html>
