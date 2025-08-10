@@ -2,12 +2,13 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Mini Mario-Maker (HTML) — Plumber Player</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Mini Mario-Maker (HTML) — Touch Ready</title>
 <style>
   :root { --bg:#0e1320; --ink:#e6e8ef; --muted:#99a1b3; --accent:#4f8cff; --good:#2ecc71; --bad:#e74c3c; }
-  * { box-sizing: border-box; }
-  body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; color: var(--ink); background: linear-gradient(180deg,#0b1020, #0a0f1b 60%, #080d18);}
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html,body { height:100%; overscroll-behavior:none; }
+  body { margin: 0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; color: var(--ink); background: linear-gradient(180deg,#0b1020, #0a0f1b 60%, #080d18); user-select:none; }
   header { display:flex; gap:.75rem; align-items:center; padding:.75rem 1rem; border-bottom:1px solid #1b2133; position:sticky; top:0; background:#0c1222ee; backdrop-filter: blur(6px); z-index:10; }
   header h1 { font-size:1rem; margin:0 .75rem 0 0; color:#cfd6e6; white-space:nowrap; }
   .row { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
@@ -21,13 +22,33 @@
   .palette { display:grid; grid-template-columns:repeat(3, 64px); gap:8px; }
   .tilebtn { width:64px; height:64px; border-radius:10px; display:grid; place-items:center; position:relative; }
   .tilebtn[data-selected="true"] { outline:2px solid var(--accent); }
-  .tiny { font-size:.8rem; color:var(--muted); }
+  .tiny { font-size:.8rem; color:#muted; }
   #canvasWrap { position:relative; background:#0a1020; }
-  #game { display:block; width:100%; height:calc(100vh - 60px); background:#0a1020; image-rendering: pixelated; }
-  #hud { position:absolute; left:8px; top:8px; padding:.3rem .5rem; border-radius:8px; background:#0b1426aa; border:1px solid #1b2133; font-weight:700; }
+  #game { display:block; width:100%; height:calc(100vh - 60px); background:#0a1020; image-rendering: pixelated; touch-action:none; }
+  #hud { position:absolute; left:8px; top:8px; padding:.3rem .5rem; border-radius:8px; background:#0b1426aa; border:1px solid #1b2133; font-weight:700; z-index:5; }
   #status { color:#cfd6e6; }
   .key { border:1px solid #27324a; background:#121a2c; border-radius:6px; padding:.15rem .35rem; font-weight:800; }
   .row .sep { width:1px; height:26px; background:#1b2133; margin:0 4px; }
+
+  /* On-screen controls (show only when needed) */
+  .tc { position:absolute; inset:auto 0 10px 0; display:flex; justify-content:space-between; padding:0 12px; pointer-events:none; z-index:6; }
+  .pad, .jump { pointer-events:auto; }
+  .pad { display:flex; gap:10px; }
+  .btn {
+    width:64px; height:64px; border-radius:14px; border:1px solid #22304d;
+    background:#121a2cdd; color:#e6e8ef; font-weight:800; font-size:18px;
+    display:grid; place-items:center; user-select:none;
+  }
+  .btn:active { transform:scale(.97); }
+  .jump { margin-left:auto; }
+  .hidden { display:none !important; }
+
+  /* Compact layout on small screens: stack sidebar */
+  @media (max-width: 900px) {
+    #wrap { grid-template-columns: 1fr; }
+    #sidebar { order:2; }
+    #canvasWrap { order:1; }
+  }
 </style>
 </head>
 <body>
@@ -39,7 +60,7 @@
       <label for="loadFile" class="chip" title="Load JSON (L)">Load JSON</label>
       <input id="loadFile" type="file" accept="application/json" style="display:none" />
       <div class="sep"></div>
-      <button id="spawnBtn" title="Set spawn at cursor">Set Spawn</button>
+      <button id="spawnBtn" title="Tap canvas to set spawn">Set Spawn</button>
       <button id="resetBtn" title="Reset to spawn (R)">Reset</button>
       <div class="sep"></div>
       <label class="chip">Layer:
@@ -51,12 +72,12 @@
       </label>
       <label class="chip">Brush:
         <select id="brushSel">
-          <option value="paint">Paint (LMB)</option>
-          <option value="erase">Erase (RMB / X)</option>
+          <option value="paint">Paint (Tap/Drag)</option>
+          <option value="erase">Erase (Tap/Drag)</option>
         </select>
       </label>
       <div class="sep"></div>
-      <span class="tiny">Move: <span class="key">A</span>/<span class="key">D</span>, Jump: <span class="key">Space</span>, Toggle: <span class="key">E</span></span>
+      <span class="tiny">Keyboard still works: A/D, Space, E</span>
     </div>
   </header>
 
@@ -64,19 +85,30 @@
     <aside id="sidebar">
       <h3>Tiles (1–6)</h3>
       <div class="palette" id="palette"></div>
-      <p class="tiny">Tip: <b>Tab</b> to switch layer, <b>S</b> save, <b>L</b> load, <b>R</b> reset.</p>
+      <p class="tiny">Mobile: tap/drag to paint · two-finger drag to pan · tap after “Set Spawn” to place.</p>
       <h3>Legend</h3>
       <ul class="tiny">
-        <li><b>Ground/Brick/Question</b> → Solid colliders</li>
-        <li><b>Spike</b> → Death/respawn</li>
-        <li><b>Coin</b> → Collectible</li>
-        <li><b>Flag</b> → Level complete</li>
+        <li><b>Ground/Brick/Question</b> → Solid</li>
+        <li><b>Spike</b> → Death</li>
+        <li><b>Coin</b> → Collect</li>
+        <li><b>Flag</b> → Win</li>
       </ul>
     </aside>
 
     <main id="canvasWrap">
       <canvas id="game" width="1280" height="720"></canvas>
       <div id="hud"><span id="status">Edit</span> · Coins: <span id="coins">0</span></div>
+
+      <!-- Touch controls (shown in Play mode on touch devices) -->
+      <div id="touchControls" class="tc hidden">
+        <div class="pad">
+          <div id="btnLeft" class="btn">◀︎</div>
+          <div id="btnRight" class="btn">▶︎</div>
+        </div>
+        <div class="jump">
+          <div id="btnJump" class="btn">⤒</div>
+        </div>
+      </div>
     </main>
   </div>
 
@@ -163,7 +195,7 @@ function flagSkin(){
    STATE
 =========================== */
 const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d');
+const ctx = canvas.getContext('2d', { alpha: false });
 const hudStatus = document.getElementById('status');
 const hudCoins = document.getElementById('coins');
 
@@ -176,10 +208,16 @@ const spawnBtn = document.getElementById('spawnBtn');
 const resetBtn = document.getElementById('resetBtn');
 const brushSel = document.getElementById('brushSel');
 
+const touchControls = document.getElementById('touchControls');
+const btnLeft = document.getElementById('btnLeft');
+const btnRight = document.getElementById('btnRight');
+const btnJump = document.getElementById('btnJump');
+
 let editMode = true;
 let activeLayer = 0;
 let activeTile = 1;
 let brush = 'paint';
+let spawnArm = false; // tap to place after pressing Set Spawn
 
 let map = [
   createGrid(GRID_W, GRID_H, 0),
@@ -193,8 +231,7 @@ let coinsCollected = 0;
 const player = {
   x: spawn.x, y: spawn.y, w: 22, h: 28,
   vx: 0, vy: 0, onGround: false, facing: 1, dead:false, win:false,
-  animTime: 0, // seconds
-  state: 'idle' // idle|run|jump
+  animTime: 0, state: 'idle'
 };
 
 const camera = { x:0, y:0 };
@@ -202,27 +239,47 @@ const camera = { x:0, y:0 };
 function createGrid(w,h,fill=0){ return Array.from({length:h}, ()=> Array(w).fill(fill)); }
 
 /* ===========================
-   INPUT
+   INPUT (Keyboard + Touch)
 =========================== */
 const keys = new Set();
+
+// virtual touch states
+const tpad = { left:false, right:false, jump:false };
+
 window.addEventListener('keydown', e=>{
   if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)) e.preventDefault();
   keys.add(e.key.toLowerCase());
-
   if (e.key.toLowerCase()==='e') toggleMode();
   if (e.key.toLowerCase()==='tab'){ e.preventDefault(); cycleLayer(); }
   if (e.key.toLowerCase()==='s') { if (editMode) saveJSON(); }
   if (e.key.toLowerCase()==='l') { if (editMode) loadFile.click(); }
   if (e.key.toLowerCase()==='r') resetToSpawn();
   if (e.key.toLowerCase()==='x') brushSel.value = brush = 'erase';
-
   const num = Number(e.key);
   if ([1,2,3,4,5,6].includes(num)) selectTile(num);
 });
 window.addEventListener('keyup', e=> keys.delete(e.key.toLowerCase()));
 canvas.addEventListener('contextmenu', e=> e.preventDefault());
 
+// --- Touch on-screen buttons ---
+function bindHold(btn, on, off){
+  const start = e=>{ e.preventDefault(); on(); };
+  const end   = e=>{ e.preventDefault(); off(); };
+  btn.addEventListener('touchstart', start, {passive:false});
+  btn.addEventListener('touchend', end, {passive:false});
+  btn.addEventListener('touchcancel', end, {passive:false});
+  // also support mouse for desktop testing
+  btn.addEventListener('mousedown', start);
+  window.addEventListener('mouseup', off);
+}
+bindHold(btnLeft,  ()=> tpad.left=true,  ()=> tpad.left=false);
+bindHold(btnRight, ()=> tpad.right=true, ()=> tpad.right=false);
+bindHold(btnJump,  ()=> tpad.jump=true,  ()=> tpad.jump=false);
+
+// --- Canvas touch for painting / panning / spawn placement ---
 let mouse = {x:0,y:0, down:false, rdown:false};
+let touchState = { panning:false, lastX:0, lastY:0 };
+
 canvas.addEventListener('mousemove', e=>{
   const rect = canvas.getBoundingClientRect();
   mouse.x = (e.clientX - rect.left);
@@ -237,13 +294,72 @@ window.addEventListener('mouseup', e=>{
   if (e.button===2) mouse.rdown = false;
 });
 
-function worldMouse(){
-  return { x: camera.x + mouse.x, y: camera.y + mouse.y };
+// Touch handlers
+canvas.addEventListener('touchstart', e=>{
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  if (e.touches.length === 1){
+    // single finger: paint or place spawn
+    const t = e.touches[0];
+    mouse.x = t.clientX - rect.left;
+    mouse.y = t.clientY - rect.top;
+
+    if (spawnArm){
+      const {cx,cy} = cellUnderMouse();
+      if (inBounds(cx,cy)){ spawn.x=cx*TILE; spawn.y=cy*TILE; flash("Spawn set"); spawnArm=false; }
+      return;
+    }
+
+    if (editMode){
+      mouse.down = true; // paint/erase handled in editorUpdate
+    }
+  } else if (e.touches.length >= 2){
+    // two-finger pan
+    touchState.panning = true;
+    const c = centroid(e.touches, rect);
+    touchState.lastX = c.x; touchState.lastY = c.y;
+  }
+},{passive:false});
+
+canvas.addEventListener('touchmove', e=>{
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+
+  if (touchState.panning && e.touches.length>=2){
+    const c = centroid(e.touches, rect);
+    const dx = c.x - touchState.lastX;
+    const dy = c.y - touchState.lastY;
+    // move camera opposite finger move
+    camera.x = clamp(camera.x - dx, 0, GRID_W*TILE - canvas.width);
+    camera.y = clamp(camera.y - dy, 0, GRID_H*TILE - canvas.height);
+    touchState.lastX = c.x; touchState.lastY = c.y;
+  } else if (e.touches.length===1){
+    const t = e.touches[0];
+    mouse.x = t.clientX - rect.left;
+    mouse.y = t.clientY - rect.top;
+  }
+},{passive:false});
+
+canvas.addEventListener('touchend', e=>{
+  e.preventDefault();
+  if (e.touches.length===0){ mouse.down=false; mouse.rdown=false; touchState.panning=false; }
+},{passive:false});
+canvas.addEventListener('touchcancel', e=>{
+  e.preventDefault();
+  mouse.down=false; mouse.rdown=false; touchState.panning=false;
+},{passive:false});
+
+function centroid(touches, rect){
+  let x=0,y=0; for (let i=0;i<touches.length;i++){ x+=touches[i].clientX - rect.left; y+=touches[i].clientY - rect.top; }
+  return { x:x/touches.length, y:y/touches.length };
 }
+
+function worldMouse(){ return { x: camera.x + mouse.x, y: camera.y + mouse.y }; }
 function cellUnderMouse(){
   const wm = worldMouse();
   return { cx: Math.floor(wm.x / TILE), cy: Math.floor(wm.y / TILE) };
 }
+function inBounds(cx,cy){ return cx>=0 && cy>=0 && cx<GRID_W && cy<GRID_H; }
 
 /* ===========================
    UI
@@ -252,7 +368,7 @@ modeBtn.onclick = toggleMode;
 saveBtn.onclick = saveJSON;
 loadFile.onchange = handleLoad;
 layerSel.onchange = e => activeLayer = Number(e.target.value);
-spawnBtn.onclick = () => { const {cx,cy}=cellUnderMouse(); spawn.x=cx*TILE; spawn.y=cy*TILE; flash("Spawn set"); };
+spawnBtn.onclick = () => { spawnArm = true; flash("Tap canvas to place spawn"); };
 resetBtn.onclick = resetToSpawn;
 brushSel.onchange = e => brush = e.target.value;
 
@@ -261,8 +377,9 @@ function toggleMode(){
   modeLbl.textContent = editMode ? "Edit" : "Play";
   modeBtn.setAttribute('aria-pressed', String(!editMode));
   hudStatus.textContent = editMode ? "Edit" : "Play";
+  touchControls.classList.toggle('hidden', editMode || !isTouchDevice());
   if (editMode){ player.vx = player.vy = 0; player.state='idle'; }
-  else resetToSpawn();
+  else { spawnArm=false; resetToSpawn(); }
 }
 function cycleLayer(){
   activeLayer = (activeLayer+1)%3;
@@ -272,6 +389,7 @@ function selectTile(id){
   activeTile = id;
   [...document.querySelectorAll('.tilebtn')].forEach(b=> b.dataset.selected = (Number(b.dataset.id)===id));
 }
+function isTouchDevice(){ return (('ontouchstart' in window) || navigator.maxTouchPoints>0); }
 
 /* ===========================
    PALETTE
@@ -346,14 +464,17 @@ function handleLoad(e){
 =========================== */
 function editorUpdate(dt){
   const {cx,cy} = cellUnderMouse();
-  if (cx>=0 && cy>=0 && cx<GRID_W && cy<GRID_H){
+  if (inBounds(cx,cy)){
     if (mouse.down && brush==='paint') map[activeLayer][cy][cx] = activeTile;
     if ((mouse.rdown) || (mouse.down && brush==='erase')) map[activeLayer][cy][cx] = 0;
   }
-  const targetX = Math.max(0, Math.min(cx*TILE - canvas.width/2 + TILE/2, GRID_W*TILE - canvas.width));
-  const targetY = Math.max(0, Math.min(cy*TILE - canvas.height/2 + TILE/2, GRID_H*TILE - canvas.height));
-  camera.x += (targetX - camera.x) * Math.min(1, dt * CAMERA_LERP);
-  camera.y += (targetY - camera.y) * Math.min(1, dt * CAMERA_LERP);
+  // only auto-follow cursor if not panning by touch
+  if (!touchState.panning){
+    const targetX = Math.max(0, Math.min(cx*TILE - canvas.width/2 + TILE/2, GRID_W*TILE - canvas.width));
+    const targetY = Math.max(0, Math.min(cy*TILE - canvas.height/2 + TILE/2, GRID_H*TILE - canvas.height));
+    camera.x += (targetX - camera.x) * Math.min(1, dt * CAMERA_LERP);
+    camera.y += (targetY - camera.y) * Math.min(1, dt * CAMERA_LERP);
+  }
 }
 
 /* ===========================
@@ -439,13 +560,13 @@ requestAnimationFrame(loop);
 function update(dt){
   if (editMode){ editorUpdate(dt); return; }
 
-  const left  = keys.has('a') || keys.has('arrowleft');
-  const right = keys.has('d') || keys.has('arrowright');
-  const jump  = keys.has(' ') || keys.has('w') || keys.has('arrowup');
+  const left  = tpad.left  || keys.has('a') || keys.has('arrowleft');
+  const right = tpad.right || keys.has('d') || keys.has('arrowright');
+  const jump  = tpad.jump  || keys.has(' ') || keys.has('w') || keys.has('arrowup');
 
   player.vx = 0;
-  if (left)  { player.vx = -MOVE_SPEED; player.facing = -1; }
-  if (right) { player.vx =  MOVE_SPEED; player.facing =  1; }
+  if (left && !right)  { player.vx = -MOVE_SPEED; player.facing = -1; }
+  if (right && !left)  { player.vx =  MOVE_SPEED; player.facing =  1; }
 
   player.vy += GRAVITY * dt;
   if (player.vy > MAX_FALL) player.vy = MAX_FALL;
@@ -499,7 +620,7 @@ function render(){
 
   if (editMode){
     const {cx,cy} = cellUnderMouse();
-    if (cx>=0 && cy>=0 && cx<GRID_W && cy<GRID_H){
+    if (inBounds(cx,cy)){
       ctx.strokeStyle = 'rgba(255,255,255,0.4)';
       ctx.strokeRect(cx*TILE+0.5, cy*TILE+0.5, TILE-1, TILE-1);
       if (brush==='paint' && activeTile!==0){
@@ -547,16 +668,11 @@ function drawPlayer(){
   const facing = player.facing;
   const t = player.animTime;
 
-  // base body box for collisions:
-  // player.w=22, player.h=28; sprite drawn a bit larger around it.
   ctx.save();
   ctx.translate(px + player.w/2, py + player.h/2);
-
-  // flip for facing
   ctx.scale(facing, 1);
   ctx.translate(-player.w/2, -player.h/2);
 
-  // choose frame by state
   if (player.state==='idle') drawPlumberIdle(ctx);
   else if (player.state==='run') drawPlumberRun(ctx, t);
   else drawPlumberJump(ctx);
@@ -564,122 +680,52 @@ function drawPlayer(){
   ctx.restore();
 }
 
-// simple palette
 const P = {
-  skin: "#ffcc99",
-  hair: "#5a3112",
-  hat:  "#d33a2c",   // red cap
-  shirt:"#e0472f",
-  over:"#2e6dd1",    // blue overalls
-  trim:"#103a86",
-  glove:"#f3f5ff",
-  boot:"#5c3b20",
-  shade:"#00000022"
+  skin: "#ffcc99", hair: "#5a3112", hat:"#d33a2c", shirt:"#e0472f",
+  over:"#2e6dd1", trim:"#103a86", glove:"#f3f5ff", boot:"#5c3b20", shade:"#00000022"
 };
 
 function drawPlumberIdle(c){
-  // drop shadow
   c.fillStyle=P.shade; c.fillRect(2,26,18,2);
-
-  // boots
   c.fillStyle=P.boot; c.fillRect(2,22,7,4); c.fillRect(13,22,7,4);
-
-  // legs/overalls
-  c.fillStyle=P.over; c.fillRect(3,14,16,9);
-  c.fillStyle=P.trim; c.fillRect(3,20,16,1);
-
-  // shirt sleeves peeking
+  c.fillStyle=P.over; c.fillRect(3,14,16,9); c.fillStyle=P.trim; c.fillRect(3,20,16,1);
   c.fillStyle=P.shirt; c.fillRect(0,12,4,4); c.fillRect(18,12,4,4);
-
-  // torso
   c.fillStyle=P.shirt; c.fillRect(5,10,12,8);
-
-  // gloves
   c.fillStyle=P.glove; c.fillRect(-1,14,4,4); c.fillRect(19,14,4,4);
-
-  // head
   c.fillStyle=P.skin; c.fillRect(6,3,10,7);
-
-  // hair side
   c.fillStyle=P.hair; c.fillRect(5,6,2,4);
-
-  // cap
   c.fillStyle=P.hat; c.fillRect(4,1,14,3); c.fillRect(3,2,16,2);
-
-  // eyes / mustache
-  c.fillStyle="#222"; c.fillRect(8,6,2,2); c.fillRect(12,6,2,2);
-  c.fillRect(7,8,8,2);
+  c.fillStyle="#222"; c.fillRect(8,6,2,2); c.fillRect(12,6,2,2); c.fillRect(7,8,8,2);
 }
-
 function drawPlumberRun(c, t){
-  // simple two-frame leg swing
-  const phase = Math.sin(t*10);
-  const leftUp = phase>0;
-
+  const phase = Math.sin(t*10); const leftUp = phase>0;
   c.fillStyle=P.shade; c.fillRect(2,26,18,2);
-
-  // boots (animated)
-  c.fillStyle=P.boot;
-  if (leftUp){ c.fillRect(2,21,7,5); c.fillRect(13,23,7,3); }
-  else       { c.fillRect(2,23,7,3); c.fillRect(13,21,7,5); }
-
-  // overalls legs
-  c.fillStyle=P.over;
-  if (leftUp){ c.fillRect(3,14,7,9); c.fillRect(12,16,7,7); }
-  else       { c.fillRect(3,16,7,7); c.fillRect(12,14,7,9); }
+  c.fillStyle=P.boot; if (leftUp){ c.fillRect(2,21,7,5); c.fillRect(13,23,7,3); } else { c.fillRect(2,23,7,3); c.fillRect(13,21,7,5); }
+  c.fillStyle=P.over; if (leftUp){ c.fillRect(3,14,7,9); c.fillRect(12,16,7,7); } else { c.fillRect(3,16,7,7); c.fillRect(12,14,7,9); }
   c.fillStyle=P.trim; c.fillRect(3,20,16,1);
-
-  // swinging arms
-  c.fillStyle=P.shirt;
-  if (leftUp){ c.fillRect(0,11,4,5); c.fillRect(18,12,4,5); }
-  else       { c.fillRect(0,12,4,5); c.fillRect(18,11,4,5); }
-  c.fillStyle=P.glove;
-  if (leftUp){ c.fillRect(-1,14,4,4); c.fillRect(19,15,4,4); }
-  else       { c.fillRect(-1,15,4,4); c.fillRect(19,14,4,4); }
-
-  // torso
+  c.fillStyle=P.shirt; if (leftUp){ c.fillRect(0,11,4,5); c.fillRect(18,12,4,5); } else { c.fillRect(0,12,4,5); c.fillRect(18,11,4,5); }
+  c.fillStyle=P.glove; if (leftUp){ c.fillRect(-1,14,4,4); c.fillRect(19,15,4,4); } else { c.fillRect(-1,15,4,4); c.fillRect(19,14,4,4); }
   c.fillStyle=P.shirt; c.fillRect(5,10,12,8);
-
-  // head + cap
-  c.fillStyle=P.skin; c.fillRect(6,3,10,7);
-  c.fillStyle=P.hair; c.fillRect(5,6,2,4);
+  c.fillStyle=P.skin; c.fillRect(6,3,10,7); c.fillStyle=P.hair; c.fillRect(5,6,2,4);
   c.fillStyle=P.hat;  c.fillRect(4,1,14,3); c.fillRect(3,2,16,2);
-
-  // face details
-  c.fillStyle="#222"; c.fillRect(8,6,2,2); c.fillRect(12,6,2,2);
-  c.fillRect(7,8,8,2);
+  c.fillStyle="#222"; c.fillRect(8,6,2,2); c.fillRect(12,6,2,2); c.fillRect(7,8,8,2);
 }
-
 function drawPlumberJump(c){
   c.fillStyle=P.shade; c.fillRect(2,26,18,2);
-
-  // tucked boots
   c.fillStyle=P.boot; c.fillRect(2,21,7,4); c.fillRect(13,21,7,4);
-
-  // overalls
-  c.fillStyle=P.over; c.fillRect(3,14,16,8);
-  c.fillStyle=P.trim; c.fillRect(3,19,16,1);
-
-  // arms up
+  c.fillStyle=P.over; c.fillRect(3,14,16,8); c.fillStyle=P.trim; c.fillRect(3,19,16,1);
   c.fillStyle=P.shirt; c.fillRect(0,9,4,6); c.fillRect(18,9,4,6);
   c.fillStyle=P.glove; c.fillRect(-1,9,4,4); c.fillRect(19,9,4,4);
-
-  // torso
   c.fillStyle=P.shirt; c.fillRect(5,10,12,8);
-
-  // head + cap
-  c.fillStyle=P.skin; c.fillRect(6,3,10,7);
-  c.fillStyle=P.hair; c.fillRect(5,6,2,4);
+  c.fillStyle=P.skin; c.fillRect(6,3,10,7); c.fillStyle=P.hair; c.fillRect(5,6,2,4);
   c.fillStyle=P.hat;  c.fillRect(4,1,14,3); c.fillRect(3,2,16,2);
-
-  c.fillStyle="#222"; c.fillRect(8,6,2,2); c.fillRect(12,6,2,2);
-  c.fillRect(7,8,8,2);
+  c.fillStyle="#222"; c.fillRect(8,6,2,2); c.fillRect(12,6,2,2); c.fillRect(7,8,8,2);
 }
 
 /* ===========================
    TOOLS
 =========================== */
-function flash(msg, ms=700, color='var(--accent)'){
+function flash(msg, ms=700){
   const el = document.createElement('div');
   el.textContent = msg;
   el.style.position='absolute';
@@ -694,6 +740,7 @@ function flash(msg, ms=700, color='var(--accent)'){
   setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateY(-6px)'; }, ms);
   setTimeout(()=> el.remove(), ms+300);
 }
+function clamp(v,min,max){ return Math.max(min, Math.min(max, v)); }
 
 /* ===========================
    DEFAULT SAMPLE LEVEL
@@ -709,6 +756,9 @@ function flash(msg, ms=700, color='var(--accent)'){
   map[1][24][28]=6;
   spawn = {x: 6*TILE, y: 20*TILE};
   resetToSpawn();
+
+  // show touch controls if device supports touch and in Play
+  touchControls.classList.toggle('hidden', editMode || !isTouchDevice());
 })();
 </script>
 </body>
